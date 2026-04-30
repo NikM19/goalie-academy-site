@@ -76,8 +76,10 @@ Sheets:
 - [x] index.html structure and navigation prepared for Goalie Academy
 - [x] Navigation updated according to the client brief
 - [x] Changes pushed to GitHub
-- [ ] Prepare Hero section for Goalie Academy
-- [ ] Add video background idea from Training Studio
+- [x] Header logo updated with simplified Goalie Academy logo
+- [x] Header logo checked on desktop and mobile
+- [x] Favicon updated to Goalie Academy shield icon
+- [ ] Prepare Hero background / video background
 - [ ] Adapt Programs section
 - [ ] Adapt Camps section
 - [ ] Adapt Coach section

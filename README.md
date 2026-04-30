@@ -70,11 +70,13 @@ Sheets:
 - [x] Create GitHub repository
 - [x] Choose base template: OnNext
 - [x] Choose reference template: Training Studio
-- [x] Add OnNext files to the project
-- [x] Open project in VS Code
-- [x] Check template locally
-- [ ] Clean unnecessary template sections
-- [ ] Adapt Hero section
+- [x] OnNext files added to the project
+- [x] Project opened in VS Code
+- [x] Template checked locally with Live Server
+- [x] index.html structure and navigation prepared for Goalie Academy
+- [x] Navigation updated according to the client brief
+- [x] Changes pushed to GitHub
+- [ ] Prepare Hero section for Goalie Academy
 - [ ] Add video background idea from Training Studio
 - [ ] Adapt Programs section
 - [ ] Adapt Camps section

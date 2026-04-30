@@ -70,9 +70,9 @@ Sheets:
 - [x] Create GitHub repository
 - [x] Choose base template: OnNext
 - [x] Choose reference template: Training Studio
-- [ ] Add OnNext files to the project
-- [ ] Open project in VS Code
-- [ ] Check template locally
+- [x] Add OnNext files to the project
+- [x] Open project in VS Code
+- [x] Check template locally
 - [ ] Clean unnecessary template sections
 - [ ] Adapt Hero section
 - [ ] Add video background idea from Training Studio

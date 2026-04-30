@@ -79,7 +79,10 @@ Sheets:
 - [x] Header logo updated with simplified Goalie Academy logo
 - [x] Header logo checked on desktop and mobile
 - [x] Favicon updated to Goalie Academy shield icon
-- [ ] Prepare Hero background / video background
+- [x] Hero background replaced with hockey rink image
+- [x] Hero background checked with Live Server
+- [x] .DS_Store files ignored and cleaned up
+- [ ] Review and polish the Hero section on desktop and mobile
 - [ ] Adapt Programs section
 - [ ] Adapt Camps section
 - [ ] Adapt Coach section

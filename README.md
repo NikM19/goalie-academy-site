@@ -83,8 +83,12 @@ Sheets:
 - [x] Hero background checked with Live Server
 - [x] .DS_Store files ignored and cleaned up
 - [ ] Review and polish the Hero section on desktop and mobile
-- [ ] Adapt Programs section
-- [ ] Adapt Camps section
+- [x] Programs section updated with three training program cards
+- [x] Program card texts updated
+- [x] Book Training buttons linked to #booking
+- [x] Programs hover behavior fixed and tested
+- [x] Programs section checked on desktop and mobile
+- [ ] Prepare Camps & Intensives section
 - [ ] Adapt Coach section
 - [ ] Adapt Schedule section
 - [ ] Adapt Cooperation section

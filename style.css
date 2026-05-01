@@ -747,6 +747,28 @@ xclip
 	position: relative;
 	z-index: 1;
 }
+
+#camps .services-inner-box .sim-btn{
+	position: relative;
+	z-index: 1;
+	align-self: flex-start;
+	margin-top: auto;
+}
+
+#camps .row{
+	align-items: stretch;
+}
+
+#camps .col-md-4{
+	margin-bottom: 30px;
+}
+
+#camps .services-inner-box{
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	margin-bottom: 0;
+}
  
 
 .btn-ber{

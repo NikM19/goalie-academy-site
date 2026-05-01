@@ -88,8 +88,11 @@ Sheets:
 - [x] Book Training buttons linked to #booking
 - [x] Programs hover behavior fixed and tested
 - [x] Programs section checked on desktop and mobile
-- [ ] Prepare Camps & Intensives section
-- [ ] Adapt Coach section
+- [x] Camps section updated with three event-style cards
+- [x] Camps cards aligned to equal height
+- [x] Book / Apply buttons linked to #booking
+- [x] Camps section checked on desktop and mobile
+- [ ] Prepare Coach / Academy section
 - [ ] Adapt Schedule section
 - [ ] Adapt Cooperation section
 - [ ] Adapt Reviews section

@@ -223,69 +223,122 @@
                 <h3>Coach / Academy</h3>
                 <p>Meet the academy approach: technical detail, patient feedback, and training that fits each goalie age group.</p>
             </div><!-- end title -->
-			
-			<div class="gallery-menu row">
-				<div class="col-md-12">
-					<div class="button-group filter-button-group text-center">
-						<button class="active" data-filter="*">All</button>
-						<button data-filter=".gal_a">On-Ice</button>
-						<button data-filter=".gal_b">Skills</button>
-						<button data-filter=".gal_c">Academy</button>
-					</div>
-				</div>
-			</div>
-			
-			<div class="gallery-list row">
-				<div class="col-md-4 col-sm-6 gallery-grid gal_a gal_b">
-					<div class="gallery-single fix">
-						<img src="uploads/gallery_img-01.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/gallery_img-01.jpg" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
+
+			<ul class="nav coach-tabs justify-content-center" id="coachTabs" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link active" id="coach-tab" data-toggle="pill" href="#coach-tab-content" role="tab" aria-controls="coach-tab-content" aria-selected="true">Coach</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="academy-tab" data-toggle="pill" href="#academy-tab-content" role="tab" aria-controls="academy-tab-content" aria-selected="false">Academy</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="method-tab" data-toggle="pill" href="#method-tab-content" role="tab" aria-controls="method-tab-content" aria-selected="false">Method</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="philosophy-tab" data-toggle="pill" href="#philosophy-tab-content" role="tab" aria-controls="philosophy-tab-content" aria-selected="false">Philosophy</a>
+				</li>
+			</ul>
+
+			<div class="tab-content coach-tab-content" id="coachTabContent">
+				<div class="tab-pane fade show active" id="coach-tab-content" role="tabpanel" aria-labelledby="coach-tab">
+					<div class="row align-items-center">
+						<div class="col-md-5">
+							<img src="images/coach-ilya.jpg" class="img-fluid coach-media" alt="Ilya Apasov">
+						</div>
+						<div class="col-md-7">
+							<div class="message-box">
+								<h2>Ilya Apasov</h2>
+								<p>Founder of Goalie Academy and Head Goalie Coach at Helsinki Tiikerit. Ilya works with goalies of different ages and levels - from beginners to advanced players - with a focus on technical detail, confidence, and clear feedback.</p>
+								<ul class="coach-list">
+									<li>Works with U7-U20 goalies</li>
+									<li>Individual feedback for every player</li>
+									<li>Focus on technique, confidence, and game understanding</li>
+									<li>Practical coaching in every session</li>
+								</ul>
+								<a href="#booking" class="sim-btn hvr-bounce-to-top"><span>Book Training</span></a>
+							</div>
 						</div>
 					</div>
 				</div>
-				
-				<div class="col-md-4 col-sm-6 gallery-grid gal_c gal_b">
-					<div class="gallery-single fix">
-						<img src="uploads/gallery_img-02.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/gallery_img-02.jpg" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
+
+				<div class="tab-pane fade" id="academy-tab-content" role="tabpanel" aria-labelledby="academy-tab">
+					<div class="row align-items-center">
+						<div class="col-md-5">
+							<img src="images/academy-group.jpg" class="img-fluid coach-media" alt="Goalie Academy training group">
+						</div>
+						<div class="col-md-7">
+							<div class="message-box">
+								<h2>About Goalie Academy</h2>
+								<p>Goalie Academy helps young goalies develop through regular, structured, and easy-to-understand training. The academy offers different formats for U7-U20 players in Helsinki.</p>
+								<ul class="coach-list">
+									<li>Individual training</li>
+									<li>Mini-group sessions</li>
+									<li>Group training</li>
+									<li>Camps and intensives</li>
+									<li>Location: Helsinki / Salmisaari Arena</li>
+								</ul>
+								<a href="#programs" class="sim-btn hvr-bounce-to-top"><span>View Programs</span></a>
+							</div>
 						</div>
 					</div>
 				</div>
-				
-				<div class="col-md-4 col-sm-6 gallery-grid gal_a gal_c">
-					<div class="gallery-single fix">
-						<img src="uploads/gallery_img-03.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/gallery_img-03.jpg" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
+
+				<div class="tab-pane fade" id="method-tab-content" role="tabpanel" aria-labelledby="method-tab">
+					<div class="row align-items-center">
+						<div class="col-md-5">
+							<div class="coach-focus-panel">
+								<span>Skating</span>
+								<span>Movement</span>
+								<span>Positioning</span>
+								<span>Angles</span>
+								<span>Tracking</span>
+								<span>Reactions</span>
+								<span>Recovery</span>
+								<span>Game Situations</span>
+							</div>
+						</div>
+						<div class="col-md-7">
+							<div class="message-box">
+								<h2>Training Method</h2>
+								<p>The training method is built around strong technical fundamentals, repeated quality reps, and game-ready goalie habits. Each session is adapted to the player's age, level, and current development needs.</p>
+								<ul class="coach-list">
+									<li>Skating and movement</li>
+									<li>Positioning and angles</li>
+									<li>Puck tracking and reactions</li>
+									<li>Recovery techniques</li>
+									<li>Game situations and decision-making</li>
+								</ul>
+								<a href="#booking" class="sim-btn hvr-bounce-to-top"><span>Book Training</span></a>
+							</div>
 						</div>
 					</div>
 				</div>
-				
-				<div class="col-md-4 col-sm-6 gallery-grid gal_b gal_a">
-					<div class="gallery-single fix">
-						<img src="uploads/gallery_img-04.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/gallery_img-04.jpg" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
+
+				<div class="tab-pane fade" id="philosophy-tab-content" role="tabpanel" aria-labelledby="philosophy-tab">
+					<div class="row align-items-center">
+						<div class="col-md-5">
+							<div class="coach-focus-panel">
+								<span>Patience</span>
+								<span>Confidence</span>
+								<span>Discipline</span>
+								<span>Consistency</span>
+								<span>Learning</span>
+								<span>Long-Term Progress</span>
+							</div>
 						</div>
-					</div>
-				</div>
-				
-				<div class="col-md-4 col-sm-6 gallery-grid gal_a gal_c">
-					<div class="gallery-single fix">
-						<img src="uploads/gallery_img-05.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/gallery_img-05.jpg" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-				</div>
-				
-				<div class="col-md-4 col-sm-6 gallery-grid gal_c gal_a">
-					<div class="gallery-single fix">
-						<img src="uploads/gallery_img-06.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/gallery_img-06.jpg" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
+						<div class="col-md-7">
+							<div class="message-box">
+								<h2>Academy Philosophy</h2>
+								<p>Goalie Academy believes in patient development, confidence through repetition, and long-term progress. The atmosphere is positive, demanding, and focused on helping every goalie trust the process.</p>
+								<ul class="coach-list">
+									<li>Patient development</li>
+									<li>Confidence through repetition</li>
+									<li>Discipline and consistency</li>
+									<li>Mistakes as part of learning</li>
+									<li>Long-term progress over shortcuts</li>
+								</ul>
+								<a href="#booking" class="sim-btn hvr-bounce-to-top"><span>Book Training</span></a>
+							</div>
 						</div>
 					</div>
 				</div>

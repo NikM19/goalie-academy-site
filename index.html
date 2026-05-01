@@ -351,66 +351,62 @@
 	<div id="booking" class="section lb">
 		<div class="container">
 			<div class="section-title text-center">
-                <h3>Schedule &amp; Booking</h3>
-                <p>Training times, age groups, and booking options will be added here in the next content pass.</p>
+                <h3>Book Training</h3>
+                <p>Send a training request and we will confirm available times, format, and details personally.</p>
             </div><!-- end title -->
 			
 			<div class="row">
-				<div class="col-md-4 col-sm-6 col-lg-4">
-					<div class="post-box">
-						<div class="post-thumb">
-							<img src="uploads/blog-01.jpg" class="img-fluid" alt="post-img" />
-							<div class="date">
-								<span>U7</span>
-								<span>U10</span>
+				<div class="col-md-10 offset-md-1">
+					<div class="contact_form">
+						<form id="bookingForm" name="bookingRequest" novalidate="novalidate">
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group">
+										<input class="form-control" id="booking-name" type="text" placeholder="Parent / Player name">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<input class="form-control" id="booking-email" type="email" placeholder="Email">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<input class="form-control" id="booking-phone" type="tel" placeholder="Phone / WhatsApp">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<select class="form-control" id="booking-age-group">
+											<option value="">Player age group</option>
+											<option>U7-U10</option>
+											<option>U11-U14</option>
+											<option>U15-U17</option>
+											<option>U18-U20</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<select class="form-control" id="booking-format">
+											<option value="">Training format</option>
+											<option>Individual Training</option>
+											<option>Mini-Groups</option>
+											<option>Group Training</option>
+											<option>Camps &amp; Intensives</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<textarea class="form-control" id="booking-message" placeholder="Message / preferred time"></textarea>
+									</div>
+								</div>
+								<div class="col-lg-12 text-center">
+									<button id="sendBookingButton" class="sim-btn hvr-bounce-to-top" type="button">Send Booking Request</button>
+								</div>
 							</div>
-						</div>
-						<div class="post-info">
-							<h4>Foundation goalie sessions</h4>
-							<ul>
-                                <li>Weekly training</li>
-                                <li>Placeholder schedule</li>
-                            </ul>
-							<p>Beginner-friendly ice habits, basic stance, simple movement, and confidence in the crease.</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-4 col-sm-6 col-lg-4">
-					<div class="post-box">
-						<div class="post-thumb">
-							<img src="uploads/blog-02.jpg" class="img-fluid" alt="post-img" />
-							<div class="date">
-								<span>U11</span>
-								<span>U14</span>
-							</div>
-						</div>
-						<div class="post-info">
-							<h4>Development training blocks</h4>
-							<ul>
-                                <li>Small groups</li>
-                                <li>Placeholder schedule</li>
-                            </ul>
-							<p>Edge work, angle control, tracking, rebound habits, and age-appropriate game reads.</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-4 col-sm-6 col-lg-4">
-					<div class="post-box">
-						<div class="post-thumb">
-							<img src="uploads/blog-03.jpg" class="img-fluid" alt="post-img" />
-							<div class="date">
-								<span>U15</span>
-								<span>U20</span>
-							</div>
-						</div>
-						<div class="post-info">
-							<h4>Performance sessions</h4>
-							<ul>
-                                <li>Advanced groups</li>
-                                <li>Placeholder schedule</li>
-                            </ul>
-							<p>High-tempo drills, save selection, traffic, recovery, puck handling, and video review options.</p>
-						</div>
+						</form>
 					</div>
 				</div>
 			</div>

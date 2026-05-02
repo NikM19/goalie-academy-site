@@ -92,10 +92,21 @@ Sheets:
 - [x] Camps cards aligned to equal height
 - [x] Book / Apply buttons linked to #booking
 - [x] Camps section checked on desktop and mobile
-- [ ] Prepare Coach / Academy section
-- [ ] Adapt Schedule section
-- [ ] Adapt Cooperation section
-- [ ] Adapt Reviews section
+- [x] Coach / Academy section redesigned as tabbed information block
+- [x] Coach and Academy tabs updated with real images
+- [x] Method and Philosophy tabs updated with skill/value panels
+- [x] Buttons linked to #booking and #programs
+- [x] Section checked on desktop and mobile
+- [x] Booking section updated with static training request form
+- [x] Form includes name, email, phone, age group, training format, and message fields
+- [x] Form prepared for future Google Sheets / Telegram integration
+- [x] Booking section checked on desktop and mobile
+- [x] Cooperation section updated with three partnership cards
+- [x] Contact actions changed to centered icon-only buttons
+- [x] Bottom CTA simplified without heavy background card
+- [x] Contact icons linked to #contacts
+- [x] Cooperation section checked on desktop and mobile
+- [ ] Prepare Reviews section
 - [ ] Adapt Booking form
 - [ ] Connect booking form to Google Sheets
 - [ ] Add Telegram notification

@@ -67,9 +67,6 @@
 	.pricingTable .pricingTable-signup{
 		font-size: 14px;
 	}
-	.footer-distributed .footer-left{
-		text-align: center;
-	}
 }
 @media (max-width: 767px) {
 	#mainNav {
@@ -122,9 +119,6 @@
 	}
 	.post-box{
 		margin-bottom: 30px;
-	}
-	.footer-distributed .footer-left{
-		text-align: center;
 	}
 }
 @media only screen and (min-width: 280px) and (max-width: 599px) {
@@ -185,8 +179,4 @@
 	.post-box{
 		margin-bottom: 30px;
 	}
-	.footer-distributed .footer-left{
-		text-align: center;
-	}
-	
 }

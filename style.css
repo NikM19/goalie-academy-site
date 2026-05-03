@@ -1083,40 +1083,70 @@ xclip
 	margin-bottom: 20px;
 }
 
-#schedule .schedule-row{
-	align-items: stretch;
-}
-
-#schedule .col-md-4{
-	margin-bottom: 30px;
-}
-
-#schedule .schedule-card{
+#schedule .schedule-table-wrap{
 	background: #ffffff;
-	border-left: 4px solid #28a9e2;
-	box-shadow: 0 8px 24px rgba(0,0,0,0.07);
-	display: flex;
-	flex-direction: column;
-	height: 100%;
-	padding: 26px 24px;
+	border-radius: 10px;
+	box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+	margin: 0 auto;
+	max-width: 1040px;
+	overflow-x: auto;
 }
 
-#schedule .schedule-card h4{
-	font-size: 22px;
-	font-weight: 600;
-	margin-bottom: 12px;
+#schedule .schedule-table{
+	border-collapse: collapse;
+	margin: 0;
+	min-width: 760px;
+	width: 100%;
 }
 
-#schedule .schedule-card p{
-	color: #666666;
+#schedule .schedule-table th,
+#schedule .schedule-table td{
+	border-bottom: 1px solid #eeeeee;
 	font-size: 15px;
 	line-height: 1.7;
-	margin-bottom: 22px;
+	padding: 18px 20px;
+	text-align: left;
+	vertical-align: middle;
 }
 
-#schedule .schedule-card .sim-btn{
-	align-self: flex-start;
-	margin-top: auto;
+#schedule .schedule-table th{
+	background: #333333;
+	color: #ffffff;
+	font-weight: 600;
+	letter-spacing: 0;
+	text-transform: uppercase;
+}
+
+#schedule .schedule-table th:first-child{
+	border-radius: 10px 0 0 0;
+}
+
+#schedule .schedule-table th:last-child{
+	border-radius: 0 10px 0 0;
+}
+
+#schedule .schedule-table tbody tr:last-child td{
+	border-bottom: none;
+}
+
+#schedule .schedule-table td{
+	color: #333333;
+}
+
+#schedule .schedule-status{
+	background: rgba(51,51,51,0.08);
+	border: 1px solid rgba(51,51,51,0.14);
+	border-radius: 100px;
+	color: #333333;
+	display: inline-block;
+	font-size: 13px;
+	font-weight: 600;
+	padding: 7px 12px;
+	white-space: nowrap;
+}
+
+#schedule .schedule-cta{
+	margin-top: 28px;
 }
  
 

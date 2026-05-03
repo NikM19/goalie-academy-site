@@ -1971,6 +1971,34 @@ hr.invis1 {
 	border-radius: 100px 100px 0px 100px;
 }
 
+#coach{
+	overflow: hidden;
+	position: relative;
+}
+
+#coach .coach-bg-video{
+	height: 100%;
+	inset: 0;
+	object-fit: cover;
+	pointer-events: none;
+	position: absolute;
+	width: 100%;
+	z-index: 0;
+}
+
+#coach .coach-bg-overlay{
+	background: rgba(0, 0, 0, 0.55);
+	inset: 0;
+	pointer-events: none;
+	position: absolute;
+	z-index: 1;
+}
+
+#coach > .container{
+	position: relative;
+	z-index: 2;
+}
+
 #coach .coach-tabs{
 	margin: 10px 0 30px;
 }
@@ -1993,9 +2021,11 @@ hr.invis1 {
 }
 
 #coach .coach-tab-content{
-	background: #ffffff;
+	background: rgba(255, 255, 255, 0.78);
 	border-radius: 50px 50px 0px 50px;
-	box-shadow: 0 0 10px #cccccc;
+	-webkit-backdrop-filter: blur(12px);
+	backdrop-filter: blur(12px);
+	box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
 	padding: 30px;
 }
 

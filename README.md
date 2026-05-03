@@ -104,6 +104,9 @@ Sheets:
 - [x] Form includes name, email, phone, age group, training format, and message fields
 - [x] Form prepared for future Google Sheets / Telegram integration
 - [x] Booking section checked on desktop and mobile
+- [x] Booking navigation item renamed to Schedule
+- [x] Contacts navigation item renamed to Contact
+- [x] Schedule section now shows a lightweight placeholder for upcoming training times and dates
 - [x] Cooperation section updated with three partnership cards
 - [x] Contact actions changed to centered icon-only buttons
 - [x] Bottom CTA simplified without heavy background card
@@ -111,8 +114,17 @@ Sheets:
 - [x] Cooperation section checked on desktop and mobile
 - [x] Reviews section redesigned as calm testimonial cards
 - [x] Programs and Reviews checked on desktop and mobile
-- [ ] Prepare Contacts section
-- [ ] Adapt Booking form
+- [x] Contact section redesigned into one shared premium split-card layout
+- [x] Contact section includes Book Training form
+- [x] Contact section uses light premium form fields
+- [x] Contact select field text clipping fixed
+- [x] Contact section includes Email, WhatsApp, Call, and Instagram icons
+- [x] Contact section address updated to Energiakatu 3, 00180 Helsinki
+- [x] Contact section includes embedded Google map for Energiakatu 3, 00180 Helsinki
+- [x] Contact section pixel-polished with DevTools and checked on desktop
+- [ ] Test Schedule and Contact on mobile
+- [ ] Replace placeholder contact links with real email, phone, WhatsApp, and Instagram links
+- [ ] Decide whether the static form should later connect to Google Sheets, email, or another backend
 - [ ] Connect booking form to Google Sheets
 - [ ] Add Telegram notification
 - [ ] Publish with GitHub Pages

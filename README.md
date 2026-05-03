@@ -88,6 +88,9 @@ Sheets:
 - [x] Book Training buttons linked to #booking
 - [x] Programs hover behavior fixed and tested
 - [x] Programs section checked on desktop and mobile
+- [x] Programs section redesigned with four compact offer-style program cards in one desktop row
+- [x] Video Analysis program card added
+- [x] Programs layout supports desktop 4-column, tablet 2-column, and mobile 1-column behavior
 - [x] Camps section updated with three event-style cards
 - [x] Camps cards aligned to equal height
 - [x] Book / Apply buttons linked to #booking
@@ -106,7 +109,9 @@ Sheets:
 - [x] Bottom CTA simplified without heavy background card
 - [x] Contact icons linked to #contacts
 - [x] Cooperation section checked on desktop and mobile
-- [ ] Prepare Reviews section
+- [x] Reviews section redesigned as calm testimonial cards
+- [x] Programs and Reviews checked on desktop and mobile
+- [ ] Prepare Contacts section
 - [ ] Adapt Booking form
 - [ ] Connect booking form to Google Sheets
 - [ ] Add Telegram notification

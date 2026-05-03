@@ -387,57 +387,36 @@
 		<div class="container">
 			<div class="section-title text-center">
                 <h3>Schedule</h3>
-                <p>Upcoming training times, small-group sessions, and camp dates will be updated here. For current availability, please send a request.</p>
+                <p>Upcoming training times, small-group sessions, and camp dates will be updated here.<br>For current availability, please send a request.</p>
             </div><!-- end title -->
 			
-			<div class="schedule-table-wrap">
-				<table class="schedule-table">
-					<thead>
-						<tr>
-							<th>Training format</th>
-							<th>Age group</th>
-							<th>Day / Time</th>
-							<th>Location</th>
-							<th>Status</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td data-label="Training format">Individual Training</td>
-							<td data-label="Age group">U7–U20</td>
-							<td data-label="Day / Time">By request</td>
-							<td data-label="Location">Salmisaari Arena</td>
-							<td data-label="Status"><span class="schedule-status">Ask availability</span></td>
-						</tr>
-						<tr>
-							<td data-label="Training format">Mini-Groups</td>
-							<td data-label="Age group">U9–U15</td>
-							<td data-label="Day / Time">Coming soon</td>
-							<td data-label="Location">Salmisaari Arena</td>
-							<td data-label="Status"><span class="schedule-status">Waiting list</span></td>
-						</tr>
-						<tr>
-							<td data-label="Training format">Group Training</td>
-							<td data-label="Age group">U7–U20</td>
-							<td data-label="Day / Time">Coming soon</td>
-							<td data-label="Location">Salmisaari Arena</td>
-							<td data-label="Status"><span class="schedule-status">Coming soon</span></td>
-						</tr>
-						<tr>
-							<td data-label="Training format">Camps &amp; Intensives</td>
-							<td data-label="Age group">U10–U18</td>
-							<td data-label="Day / Time">Dates coming soon</td>
-							<td data-label="Location">Helsinki</td>
-							<td data-label="Status"><span class="schedule-status">Coming soon</span></td>
-						</tr>
-					</tbody>
-				</table>
+			<div class="schedule-card">
+				<div class="schedule-calendar-panel">
+					<div class="schedule-calendar-header">
+						<button type="button" class="schedule-nav-button" id="schedule-prev-month" aria-label="Previous month"><i class="fa fa-angle-left"></i></button>
+						<h4 id="schedule-month-label">Schedule</h4>
+						<button type="button" class="schedule-nav-button" id="schedule-next-month" aria-label="Next month"><i class="fa fa-angle-right"></i></button>
+						<button type="button" class="schedule-today-button" id="schedule-today-button">Today</button>
+					</div>
+
+					<div class="schedule-weekdays">
+						<span>SUN</span>
+						<span>MON</span>
+						<span>TUE</span>
+						<span>WED</span>
+						<span>THU</span>
+						<span>FRI</span>
+						<span>SAT</span>
+					</div>
+
+					<div class="schedule-calendar-grid" id="schedule-calendar-grid" aria-live="polite"></div>
+
+					<p class="schedule-calendar-note">Exact event days will be highlighted here once confirmed.</p>
+				</div>
+
+				<div class="schedule-events-panel" id="schedule-events-list" aria-live="polite"></div>
 			</div>
 
-			<div class="schedule-cta text-center">
-				<a href="#contacts" class="sim-btn hvr-bounce-to-top"><span>Request Availability</span></a>
-			</div>
-			
 		</div>
 	</div>
 	
@@ -592,7 +571,12 @@
 										</select>
 									</div>
 								</div>
-								<div class="col-md-12">
+								<div class="col-md-6">
+									<div class="form-group">
+										<input class="form-control" id="booking-date" name="preferred_date" type="date" placeholder="Preferred date">
+									</div>
+								</div>
+								<div class="col-md-6">
 									<div class="form-group">
 										<select class="form-control" id="booking-format">
 											<option value="">Training format</option>

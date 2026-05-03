@@ -1016,6 +1016,17 @@ xclip
 	margin-bottom: 0;
 }
 
+#camps .services-inner-box::after{
+	background: #333333;
+}
+
+#camps .services-inner-box:hover h2,
+#camps .services-inner-box:hover p,
+#camps .services-inner-box:hover p strong,
+#camps .services-inner-box:hover .ser-icon i{
+	color: #ffffff;
+}
+
 #cooperation .cooperation-actions{
 	display: flex;
 	flex-wrap: wrap;

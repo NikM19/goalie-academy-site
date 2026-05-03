@@ -2815,9 +2815,9 @@ select.mobile-device {
 .quick-contact-actions a{
 	align-items: center;
 	background: #ffffff;
-	border: 1px solid #333333;
+	border: 1px solid #de1316;
 	border-radius: 50%;
-	color: #333333;
+	color: #de1316;
 	display: inline-flex;
 	font-size: 16px;
 	height: 42px;
@@ -2829,8 +2829,8 @@ select.mobile-device {
 .quick-contact-actions a:hover,
 .quick-contact-actions a:focus,
 .quick-contact-actions a:active{
-	background: #de1316;
-	border-color: #de1316;
+	background: #333333;
+	border-color: #333333;
 	color: #ffffff;
 }
 

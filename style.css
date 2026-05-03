@@ -748,6 +748,215 @@ xclip
 	z-index: 1;
 }
 
+#programs .programs-row{
+	align-items: stretch;
+	display: grid;
+	gap: 22px;
+	grid-template-columns: repeat(4, minmax(220px, 1fr));
+	justify-content: center;
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 1220px;
+}
+
+#reviews .reviews-row{
+	align-items: stretch;
+}
+
+#programs .col-md-6,
+#reviews .col-md-4{
+	margin-bottom: 30px;
+}
+
+#programs .programs-row > .col-md-6{
+	display: flex;
+	margin-bottom: 0;
+	max-width: none;
+	padding-left: 0;
+	padding-right: 0;
+	width: auto;
+}
+
+#programs .program-card{
+	background: #ffffff;
+	border-radius: 10px;
+	box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	overflow: hidden;
+	position: relative;
+	transition: all 0.3s ease-in-out 0s;
+	width: 100%;
+}
+
+#programs .program-card:hover{
+	box-shadow: 0 12px 30px rgba(40,169,226,0.22);
+	transform: translateY(-3px);
+}
+
+#programs .program-card-header{
+	background: #28a9e2;
+	color: #ffffff;
+	padding: 20px 18px 26px;
+	position: relative;
+}
+
+#programs .program-card-header::after{
+	background: #ffffff;
+	border-radius: 50% 50% 0 0;
+	bottom: -18px;
+	content: "";
+	height: 36px;
+	left: -10%;
+	position: absolute;
+	width: 120%;
+}
+
+#programs .program-card-label{
+	display: inline-block;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0;
+	margin-bottom: 8px;
+	text-transform: uppercase;
+}
+
+#programs .program-card h2{
+	color: #ffffff;
+	font-size: 21px;
+	font-weight: 600;
+	margin: 0;
+	position: relative;
+	z-index: 1;
+}
+
+#programs .program-card-body{
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	padding: 28px 18px 20px;
+}
+
+#programs .program-card-body p{
+	color: #666666;
+	font-size: 14px;
+	line-height: 1.6;
+	margin-bottom: 16px;
+}
+
+#programs .program-card-details{
+	list-style: none;
+	margin: 0 0 18px;
+	padding: 0;
+}
+
+#programs .program-card-details li{
+	border-bottom: 1px solid #eeeeee;
+	color: #666666;
+	font-size: 14px;
+	line-height: 1.5;
+	padding: 6px 0;
+}
+
+#programs .program-card-details li:first-child{
+	border-top: 1px solid #eeeeee;
+}
+
+#programs .program-card .sim-btn{
+	align-self: flex-start;
+	margin-top: auto;
+	white-space: nowrap;
+	position: relative;
+	z-index: 1;
+}
+
+#reviews .testimonial-card{
+	background: #ffffff;
+	border: 1px solid #eeeeee;
+	border-radius: 10px;
+	box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	padding: 28px;
+	transition: all 0.3s ease-in-out 0s;
+}
+
+#reviews .testimonial-card:hover{
+	box-shadow: 0 12px 28px rgba(0,0,0,0.1);
+	transform: translateY(-3px);
+}
+
+#reviews .testimonial-card-label{
+	color: #28a9e2;
+	font-size: 14px;
+	font-weight: 600;
+	margin-bottom: 18px;
+	text-transform: uppercase;
+}
+
+#reviews .testimonial-quote-mark{
+	align-items: center;
+	background: rgba(40,169,226,0.1);
+	border-radius: 50%;
+	color: #28a9e2;
+	display: flex;
+	font-size: 18px;
+	height: 42px;
+	justify-content: center;
+	margin-bottom: 20px;
+	width: 42px;
+}
+
+#reviews .testimonial-quote{
+	color: #333333;
+	font-size: 18px;
+	line-height: 1.7;
+	margin-bottom: 28px;
+}
+
+#reviews .testimonial-author{
+	border-top: 1px solid #eeeeee;
+	margin-top: auto;
+	padding-top: 18px;
+}
+
+#reviews .testimonial-author h4{
+	color: #333333;
+	font-size: 18px;
+	font-weight: 600;
+	margin-bottom: 4px;
+}
+
+#reviews .testimonial-author span{
+	color: #777777;
+	display: block;
+	font-size: 14px;
+}
+
+@media only screen and (max-width: 1199px){
+	#programs .programs-row{
+		grid-template-columns: repeat(2, minmax(260px, 1fr));
+		max-width: 760px;
+	}
+}
+
+@media only screen and (max-width: 767px){
+	#programs .programs-row{
+		grid-template-columns: minmax(0, 1fr);
+		max-width: 520px;
+	}
+
+	#programs .program-card-header{
+		padding: 20px 20px 26px;
+	}
+
+	#programs .program-card-body{
+		padding: 20px 22px 24px;
+	}
+}
+
 #camps .services-inner-box .sim-btn{
 	position: relative;
 	z-index: 1;

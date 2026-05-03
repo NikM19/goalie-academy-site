@@ -106,6 +106,8 @@ Sheets:
 - [x] Section checked on desktop and mobile
 - [x] Booking section updated with static training request form
 - [x] Form includes name, email, phone, age group, training format, and message fields
+- [x] Programs, Camps, and Coach tab CTAs prefill the Contact form Training format field with `data-training-format` and `js/custom.js`
+- [x] Camp-specific Training format options added for Summer Goalie Camp, Weekend Intensive, and Preseason Goalie Intensive
 - [x] Form prepared for future Google Sheets / Telegram integration
 - [x] Booking section checked on desktop and mobile
 - [x] Booking navigation item renamed to Schedule
@@ -137,6 +139,7 @@ Sheets:
 - [ ] Test Schedule and Contact on mobile
 - [ ] Replace placeholder contact links with real email, phone, WhatsApp, and Instagram links
 - [ ] Decide whether the static form should later connect to Google Sheets, email, or another backend
+- [ ] Implement actual booking form submission
 - [ ] Connect booking form to Google Sheets
 - [ ] Add Telegram notification
 - [ ] Publish with GitHub Pages

@@ -108,11 +108,18 @@ Sheets:
 - [x] Form includes name, email, phone, age group, training format, and message fields
 - [x] Programs, Camps, and Coach tab CTAs prefill the Contact form Training format field with `data-training-format` and `js/custom.js`
 - [x] Camp-specific Training format options added for Summer Goalie Camp, Weekend Intensive, and Preseason Goalie Intensive
+- [x] Contact form includes Preferred date field aligned with Training format
+- [x] Schedule Request Availability flow prefills Training format and Preferred date in the Contact form
+- [x] Contact form focus styling updated from browser blue to Goalie Academy brand red
 - [x] Form prepared for future Google Sheets / Telegram integration
 - [x] Booking section checked on desktop and mobile
 - [x] Booking navigation item renamed to Schedule
 - [x] Contacts navigation item renamed to Contact
-- [x] Schedule placeholder cards replaced with a responsive table for training format, age group, day/time, location, and status
+- [x] Schedule section redesigned from table layout into an interactive calendar-style layout
+- [x] Schedule calendar opens on the current month, highlights today, supports previous/next navigation, and includes a Today button
+- [x] Schedule calendar dates are clickable and update the right-side panel
+- [x] Schedule fallback panel shows selectable training format option cards when no fixed sessions exist for the selected date
+- [x] Standalone bottom Schedule CTA removed; right-side Request Availability action remains
 - [x] Cooperation section updated with three partnership cards
 - [x] Cooperation section colors polished to match Goalie Academy brand styling
 - [x] Contact actions changed to centered icon-only buttons
@@ -140,7 +147,8 @@ Sheets:
 - [ ] Replace placeholder contact links with real email, phone, WhatsApp, and Instagram links
 - [ ] Decide whether the static form should later connect to Google Sheets, email, or another backend
 - [ ] Implement actual booking form submission
-- [ ] Connect booking form to Google Sheets
+- [ ] Connect booking form to Google Sheets or another backend
+- [ ] Connect Schedule calendar to live Google Sheets data / dynamic sync
 - [ ] Add Telegram notification
 - [ ] Publish with GitHub Pages
 

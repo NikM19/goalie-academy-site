@@ -122,6 +122,7 @@ Sheets:
 - [x] Contact section address updated to Energiakatu 3, 00180 Helsinki
 - [x] Contact section includes embedded Google map for Energiakatu 3, 00180 Helsinki
 - [x] Contact section pixel-polished with DevTools and checked on desktop
+- [x] Footer redesigned with Goalie Academy square logo, two-column navigation, dark logo-matched background, copyright `All Rights Reserved. © 2026 Goalie Academy`, and design credit `Design By: M19`
 - [ ] Test Schedule and Contact on mobile
 - [ ] Replace placeholder contact links with real email, phone, WhatsApp, and Instagram links
 - [ ] Decide whether the static form should later connect to Google Sheets, email, or another backend

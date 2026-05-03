@@ -20,6 +20,15 @@
 		}
 	  });
 	
+	// Prefill booking format from selected program and camp CTAs.
+	  $(document).on('click', 'a[data-training-format]', function() {
+		var trainingFormat = $(this).data('training-format');
+		var $bookingFormat = $('#booking-format');
+		if (trainingFormat && $bookingFormat.length) {
+		  $bookingFormat.val(trainingFormat).trigger('change');
+		}
+	  });
+	
     // Closes responsive menu when a scroll trigger link is clicked
 	  $('.js-scroll-trigger').click(function() {
 		$('.navbar-collapse').collapse('hide');

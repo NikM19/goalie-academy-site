@@ -84,6 +84,7 @@ Schedule data flow:
 - Apps Script `doGet(e)` handles public Schedule JSON
 - Apps Script `doPost(e)` handles booking submissions, adds `status = new`, and leaves `notes` empty
 - Booking status can then be changed manually in Google Sheets
+- After a successful live Schedule fetch, fallback/request option cards use only active live Schedule items; inactive Google Sheets rows stay hidden from the option list
 - If the Schedule fetch fails or returns invalid data, the site keeps the static fallback schedule data
 - Testing notes: check Schedule navigation, exact-date markers, Request Availability prefill, and booking form validation
 
@@ -153,6 +154,7 @@ Schedule data flow:
 - [x] Schedule fallback panel shows selectable training format option cards when no fixed sessions exist for the selected date
 - [x] Standalone bottom Schedule CTA removed; right-side Request Availability action remains
 - [x] Schedule connected to live Google Apps Script JSON with static fallback data, by-request rows, monthly rows, exact-date event markers, and exact-date event detail cards
+- [x] Schedule fallback training format options now use active live Schedule items after successful fetch, with static fallback retained if live fetch fails
 - [x] Cooperation section updated with three partnership cards
 - [x] Cooperation section colors polished to match Goalie Academy brand styling
 - [x] Contact actions changed to centered icon-only buttons

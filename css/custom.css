@@ -32,6 +32,53 @@
 	box-shadow: none !important;
 }
 
+#schedule .schedule-request-option:focus,
+#schedule .schedule-request-option:focus-visible,
+#schedule .schedule-request-option:active,
+#schedule .schedule-request-option.is-selected {
+	background: #ffffff;
+	border-color: rgba(222, 19, 22, 0.78);
+	color: #de1316;
+	outline: none;
+	box-shadow: none;
+}
+
+.heading .get_btn,
+.heading .learn_btn {
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	color: #de1316;
+	font-weight: 600;
+}
+
+.heading .get_btn:hover,
+.heading .get_btn:focus,
+.heading .get_btn:active,
+.heading .learn_btn:hover,
+.heading .learn_btn:focus,
+.heading .learn_btn:active {
+	color: #ffffff;
+	outline: none;
+}
+
+a.sim-btn.hvr-bounce-to-top {
+	background: transparent;
+	border: 1px solid #333333;
+	color: #333333;
+}
+
+a.sim-btn.hvr-bounce-to-top:hover,
+a.sim-btn.hvr-bounce-to-top:focus,
+a.sim-btn.hvr-bounce-to-top:active {
+	color: #ffffff;
+}
+
+#camps .services-inner-box:hover .sim-btn,
+#camps .services-inner-box:focus-within .sim-btn {
+	color: #ffffff;
+}
+
 #contacts #bookingRequestForm .form-control:focus {
 	border-color: #de1316;
 	outline: none;

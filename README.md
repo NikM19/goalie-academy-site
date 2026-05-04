@@ -67,6 +67,25 @@ Bookings columns:
 
 `timestamp | name | goalie_age | training_type | preferred_date | preferred_time | phone | email | message | source`
 
+Schedule columns:
+
+`id | title | date | time | type | age | location | status | training_format | description | is_active | display_order`
+
+Schedule date rules:
+
+- Empty `date` = by-request / general availability item
+- `YYYY-MM` = monthly item
+- `YYYY-MM-DD` = exact-date event
+
+Schedule data flow:
+
+- Schedule reads public live JSON from Google Apps Script GET endpoint: `https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=schedule`
+- Booking form still submits to Google Apps Script through POST and saves to the `Bookings` sheet
+- Apps Script `doGet(e)` handles public Schedule JSON
+- Apps Script `doPost(e)` handles booking submissions
+- If the Schedule fetch fails or returns invalid data, the site keeps the static fallback schedule data
+- Testing notes: check Schedule navigation, exact-date markers, Request Availability prefill, and booking form validation
+
 ## Current progress
 
 - [x] Create Google Docs Roadmap
@@ -131,6 +150,7 @@ Bookings columns:
 - [x] Schedule calendar dates are clickable and update the right-side panel
 - [x] Schedule fallback panel shows selectable training format option cards when no fixed sessions exist for the selected date
 - [x] Standalone bottom Schedule CTA removed; right-side Request Availability action remains
+- [x] Schedule connected to live Google Apps Script JSON with static fallback data, by-request rows, monthly rows, exact-date event markers, and exact-date event detail cards
 - [x] Cooperation section updated with three partnership cards
 - [x] Cooperation section colors polished to match Goalie Academy brand styling
 - [x] Contact actions changed to centered icon-only buttons
@@ -157,7 +177,7 @@ Bookings columns:
 - [x] Footer redesigned with Goalie Academy square logo, two-column navigation, dark logo-matched background, copyright `All Rights Reserved. © 2026 Goalie Academy`, and design credit `Design By: M19`
 - [ ] Test Schedule and Contact on mobile
 - [ ] Replace placeholder contact links with real email, phone, WhatsApp, and Instagram links
-- [ ] Connect Schedule calendar to live Google Sheets data / dynamic sync
+- [x] Connect Schedule calendar to live Google Sheets data / dynamic sync
 - [ ] Optionally delete retained legacy files `js/contact_me.js` and `js/jqBootstrapValidation.js` after a final regression pass
 - [ ] Add Telegram notification
 - [ ] Publish with GitHub Pages

@@ -172,6 +172,7 @@ Schedule data flow:
 - [x] Contact location pin color updated to match the Book Training button base color
 - [x] Header navigation colors polished for brand consistency and readability over the dark hero background
 - [x] Global button hover fill color updated to Goalie Academy brand red `#de1316`
+- [x] CTA and Schedule fallback option states visually polished with refined Hero CTA defaults, thin-outline shared CTA buttons, readable Camps CTA hover text, and clean red selected/focus styling for training format cards
 - [x] Global script cleanup completed by removing missing `jquery.mobile.customized.min.js` import and fixing the RetinaJS browser export issue in `js/all.js`
 - [x] Legacy form script loading removed from `index.html` and old unused contact form block removed from `js/custom.js`; active Book Training form, Google Sheets submission, CTA prefill, and Preferred time picker remain active
 - [x] Footer redesigned with Goalie Academy square logo, two-column navigation, dark logo-matched background, copyright `All Rights Reserved. © 2026 Goalie Academy`, and design credit `Design By: M19`

@@ -63,6 +63,10 @@ Sheets:
 - Settings
 - Bookings
 
+Bookings columns:
+
+`timestamp | name | goalie_age | training_type | preferred_date | preferred_time | phone | email | message | source`
+
 ## Current progress
 
 - [x] Create Google Docs Roadmap
@@ -104,14 +108,20 @@ Sheets:
 - [x] Coach / Academy section updated with full-section local video background `videos/coach-academy-bg.mp4`, dark overlay, and glass-style content card
 - [x] Buttons linked to #booking and #programs
 - [x] Section checked on desktop and mobile
-- [x] Booking section updated with static training request form
-- [x] Form includes name, email, phone, age group, training format, and message fields
+- [x] Booking section updated with live training request form
+- [x] Form includes name, email, phone, age group, training format, Preferred date, Preferred time, and message fields
 - [x] Programs, Camps, and Coach tab CTAs prefill the Contact form Training format field with `data-training-format` and `js/custom.js`
 - [x] Camp-specific Training format options added for Summer Goalie Camp, Weekend Intensive, and Preseason Goalie Intensive
 - [x] Contact form includes Preferred date field aligned with Training format
 - [x] Schedule Request Availability flow prefills Training format and Preferred date in the Contact form
 - [x] Contact form focus styling updated from browser blue to Goalie Academy brand red
-- [x] Form prepared for future Google Sheets / Telegram integration
+- [x] Book Training form connected to Google Apps Script and Google Sheets
+- [x] Booking requests save to the `Bookings` sheet
+- [x] Booking form sends name, goalie_age, training_type, preferred_date, preferred_time, phone, email, message, and source
+- [x] Preferred time custom wheel picker added
+- [x] Manual Preferred time input syncs with the wheel picker
+- [x] Booking form includes loading, success, and error states
+- [x] Booking form validation requires name, training format, and email or phone
 - [x] Booking section checked on desktop and mobile
 - [x] Booking navigation item renamed to Schedule
 - [x] Contacts navigation item renamed to Contact
@@ -145,9 +155,6 @@ Sheets:
 - [x] Footer redesigned with Goalie Academy square logo, two-column navigation, dark logo-matched background, copyright `All Rights Reserved. © 2026 Goalie Academy`, and design credit `Design By: M19`
 - [ ] Test Schedule and Contact on mobile
 - [ ] Replace placeholder contact links with real email, phone, WhatsApp, and Instagram links
-- [ ] Decide whether the static form should later connect to Google Sheets, email, or another backend
-- [ ] Implement actual booking form submission
-- [ ] Connect booking form to Google Sheets or another backend
 - [ ] Connect Schedule calendar to live Google Sheets data / dynamic sync
 - [ ] Add Telegram notification
 - [ ] Publish with GitHub Pages

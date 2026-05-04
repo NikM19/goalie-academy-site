@@ -34,6 +34,500 @@
 		}
 	  });
 	
+	var bookingTimeHours = ['07','08','09','10','11','12','13','14','15','16','17','18','19','20','21'];
+	var bookingTimeMinutes = ['00','15','30','45'];
+
+	function getClosestBookingMinute(minute) {
+		return bookingTimeMinutes.reduce(function(closestMinute, allowedMinute) {
+			var closestDistance = Math.abs(parseInt(closestMinute, 10) - minute);
+			var allowedDistance = Math.abs(parseInt(allowedMinute, 10) - minute);
+			return allowedDistance < closestDistance ? allowedMinute : closestMinute;
+		}, bookingTimeMinutes[0]);
+	}
+
+	function parseBookingTimeParts(value) {
+		var time = value.trim();
+		var match;
+		var hour;
+		var minute;
+		var normalizedHour = '';
+		var normalizedMinute = '';
+
+		if (!time) {
+			return '';
+		}
+
+		time = time.toLowerCase();
+
+		if (/^(m|min)\s*\d{1,2}$/.test(time)) {
+			match = time.match(/^(?:m|min)\s*(\d{1,2})$/);
+			minute = parseInt(match[1], 10);
+
+			if (minute > 59) {
+				return null;
+			}
+
+			return {
+				hour: '',
+				minute: getClosestBookingMinute(minute),
+				hasHour: false,
+				hasMinute: true
+			};
+		}
+
+		time = time.replace(/[.\s]+/, ':');
+
+		if (/^:\d{1,2}$/.test(time)) {
+			match = time.match(/^:(\d{1,2})$/);
+			minute = parseInt(match[1], 10);
+
+			if (minute > 59) {
+				return null;
+			}
+
+			return {
+				hour: '',
+				minute: getClosestBookingMinute(minute),
+				hasHour: false,
+				hasMinute: true
+			};
+		}
+
+		if (/^\d{1,2}$/.test(time)) {
+			hour = parseInt(time, 10);
+			normalizedHour = String(hour).padStart(2, '0');
+
+			if (bookingTimeHours.indexOf(normalizedHour) === -1) {
+				return null;
+			}
+
+			return {
+				hour: normalizedHour,
+				minute: '',
+				hasHour: true,
+				hasMinute: false
+			};
+		} else if (/^\d{3,4}$/.test(time)) {
+			match = [time, time.slice(0, -2), time.slice(-2)];
+		} else {
+			match = time.match(/^(\d{1,2}):(\d{1,2})$/);
+		}
+
+		if (!match) {
+			return null;
+		}
+
+		hour = parseInt(match[1], 10);
+		minute = parseInt(match[2], 10);
+		normalizedHour = String(hour).padStart(2, '0');
+		normalizedMinute = getClosestBookingMinute(minute);
+
+		if (hour > 23 || minute > 59) {
+			return null;
+		}
+
+		if (bookingTimeHours.indexOf(normalizedHour) === -1) {
+			return null;
+		}
+
+		return {
+			hour: normalizedHour,
+			minute: normalizedMinute,
+			hasHour: true,
+			hasMinute: true
+		};
+	}
+
+	function normalizeBookingTimeValue(value) {
+		var parsedTime = parseBookingTimeParts(value);
+
+		if (parsedTime === '') {
+			return '';
+		}
+
+		if (!parsedTime) {
+			return null;
+		}
+
+		if (parsedTime.hasHour && parsedTime.hasMinute) {
+			return parsedTime.hour + ':' + parsedTime.minute;
+		}
+
+		if (parsedTime.hasHour) {
+			return parsedTime.hour + ':00';
+		}
+
+		return '';
+	}
+
+	function initBookingTimePicker() {
+		var picker = document.querySelector('[data-time-picker]');
+		var trigger = document.getElementById('booking-time-trigger');
+		var popover = document.getElementById('booking-time-popover');
+		var timeField = document.getElementById('booking-time-input');
+		var hiddenField = document.getElementById('booking-time');
+		var hoursWheel = picker ? picker.querySelector('[data-time-hours]') : null;
+		var minutesWheel = picker ? picker.querySelector('[data-time-minutes]') : null;
+		var doneButton = picker ? picker.querySelector('[data-time-done]') : null;
+		var form = document.getElementById('bookingRequestForm');
+		var selectedHour = '';
+		var selectedMinute = '';
+
+		if (!picker || !trigger || !popover || !timeField || !hiddenField || !hoursWheel || !minutesWheel) {
+			return;
+		}
+
+		function createOption(value, type) {
+			var option = document.createElement('button');
+			option.className = 'booking-time-option';
+			option.type = 'button';
+			option.textContent = value;
+			option.dataset.timeValue = value;
+			option.dataset.timeType = type;
+			option.setAttribute('role', 'option');
+			option.setAttribute('aria-selected', 'false');
+			return option;
+		}
+
+		function renderOptions() {
+			bookingTimeHours.forEach(function(hour) {
+				hoursWheel.appendChild(createOption(hour, 'hour'));
+			});
+			bookingTimeMinutes.forEach(function(minute) {
+				minutesWheel.appendChild(createOption(minute, 'minute'));
+			});
+		}
+
+		function syncSelectedOptions() {
+			var options = picker.querySelectorAll('.booking-time-option');
+			options.forEach(function(option) {
+				var isSelected = (option.dataset.timeType === 'hour' && option.dataset.timeValue === selectedHour) ||
+					(option.dataset.timeType === 'minute' && option.dataset.timeValue === selectedMinute);
+				option.classList.toggle('is-selected', isSelected);
+				option.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+			});
+		}
+
+		function syncTimeField() {
+			var value = selectedHour && selectedMinute ? selectedHour + ':' + selectedMinute : '';
+			timeField.value = value;
+			hiddenField.value = value;
+		}
+
+		function centerSelectedOption(wheel, value, shouldAnimate) {
+			var selected = wheel.querySelector('[data-time-value="' + value + '"]');
+			var targetTop;
+
+			if (selected) {
+				targetTop = selected.offsetTop - ((wheel.clientHeight - selected.offsetHeight) / 2);
+				if (typeof wheel.scrollTo === 'function') {
+					wheel.scrollTo({
+						top: targetTop,
+						behavior: shouldAnimate ? 'smooth' : 'auto'
+					});
+				} else {
+					wheel.scrollTop = targetTop;
+				}
+			}
+		}
+
+		function openPicker() {
+			popover.hidden = false;
+			trigger.setAttribute('aria-expanded', 'true');
+			picker.classList.add('is-open');
+			setTimeout(function() {
+				if (selectedHour) {
+					centerSelectedOption(hoursWheel, selectedHour, false);
+				}
+				if (selectedMinute) {
+					centerSelectedOption(minutesWheel, selectedMinute, false);
+				}
+			}, 0);
+		}
+
+		function closePicker() {
+			popover.hidden = true;
+			trigger.setAttribute('aria-expanded', 'false');
+			picker.classList.remove('is-open');
+		}
+
+		function togglePicker() {
+			if (popover.hidden) {
+				openPicker();
+			} else {
+				closePicker();
+			}
+		}
+
+		function selectTimePart(type, value) {
+			if (type === 'hour') {
+				selectedHour = value;
+				if (!selectedMinute) {
+					selectedMinute = '00';
+				}
+			}
+			if (type === 'minute') {
+				selectedMinute = value;
+			}
+			syncSelectedOptions();
+			syncTimeField();
+		}
+
+		function focusSiblingOption(wheel, direction) {
+			var options = Array.prototype.slice.call(wheel.querySelectorAll('.booking-time-option'));
+			var currentIndex = options.indexOf(document.activeElement);
+			var nextIndex = currentIndex < 0 ? 0 : Math.max(0, Math.min(options.length - 1, currentIndex + direction));
+			if (options[nextIndex]) {
+				options[nextIndex].focus();
+			}
+		}
+
+		function syncSelectionFromInput(shouldNormalizeInput) {
+			var parsedTime = parseBookingTimeParts(timeField.value);
+
+			if (parsedTime === '') {
+				selectedHour = '';
+				selectedMinute = '';
+				hiddenField.value = '';
+				syncSelectedOptions();
+				return '';
+			}
+
+			if (!parsedTime) {
+				selectedHour = '';
+				selectedMinute = '';
+				hiddenField.value = '';
+				syncSelectedOptions();
+				return null;
+			}
+
+			selectedHour = parsedTime.hasHour ? parsedTime.hour : '';
+			selectedMinute = parsedTime.hasMinute ? parsedTime.minute : '';
+			hiddenField.value = selectedHour && selectedMinute ? selectedHour + ':' + selectedMinute : '';
+			syncSelectedOptions();
+			if (!popover.hidden && selectedHour) {
+				centerSelectedOption(hoursWheel, selectedHour, true);
+			}
+			if (!popover.hidden && selectedMinute) {
+				centerSelectedOption(minutesWheel, selectedMinute, true);
+			}
+			if (shouldNormalizeInput && hiddenField.value) {
+				timeField.value = hiddenField.value;
+			}
+			return hiddenField.value || (selectedHour ? selectedHour + ':00' : '');
+		}
+
+		renderOptions();
+		syncSelectionFromInput();
+
+		trigger.addEventListener('click', togglePicker);
+
+		timeField.addEventListener('focus', openPicker);
+
+		timeField.addEventListener('input', function() {
+			if (!timeField.value.trim()) {
+				selectedHour = '';
+				selectedMinute = '';
+				hiddenField.value = '';
+				syncSelectedOptions();
+				return;
+			}
+			syncSelectionFromInput();
+		});
+
+		timeField.addEventListener('change', function() {
+			syncSelectionFromInput(false);
+		});
+
+		timeField.addEventListener('blur', function() {
+			syncSelectionFromInput(true);
+		});
+
+		picker.addEventListener('click', function(event) {
+			var option = event.target.closest('.booking-time-option');
+			if (!option || !picker.contains(option)) {
+				return;
+			}
+			selectTimePart(option.dataset.timeType, option.dataset.timeValue);
+		});
+
+		picker.addEventListener('keydown', function(event) {
+			var option = event.target.closest('.booking-time-option');
+
+			if (event.key === 'Escape') {
+				closePicker();
+				trigger.focus();
+				return;
+			}
+
+			if (!option) {
+				return;
+			}
+
+			if (event.key === 'Enter' || event.key === ' ') {
+				event.preventDefault();
+				selectTimePart(option.dataset.timeType, option.dataset.timeValue);
+			}
+
+			if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+				event.preventDefault();
+				focusSiblingOption(option.parentElement, event.key === 'ArrowDown' ? 1 : -1);
+			}
+		});
+
+		document.addEventListener('click', function(event) {
+			if (!popover.hidden && !picker.contains(event.target)) {
+				closePicker();
+			}
+		});
+
+		if (doneButton) {
+			doneButton.addEventListener('click', function() {
+				syncSelectionFromInput(false);
+				if (selectedHour && !selectedMinute) {
+					selectedMinute = '00';
+					syncSelectedOptions();
+					syncTimeField();
+					centerSelectedOption(minutesWheel, selectedMinute, true);
+				} else if (selectedHour && selectedMinute) {
+					syncTimeField();
+				}
+				closePicker();
+				trigger.focus();
+			});
+		}
+
+		if (form) {
+			form.addEventListener('reset', function() {
+				setTimeout(function() {
+					selectedHour = '';
+					selectedMinute = '';
+					syncSelectedOptions();
+					timeField.value = '';
+					hiddenField.value = '';
+					closePicker();
+				}, 0);
+			});
+		}
+	}
+
+	function initBookingFormSubmission() {
+		var form = document.getElementById('bookingRequestForm');
+		var submitButton = document.getElementById('sendBookingButton');
+		var status = document.getElementById('booking-form-status');
+		var endpoint = 'https://script.google.com/macros/s/AKfycbzPvbCS8LJgi82QBkpXpaFOzKJCDeUHPn_4ezo2uxmcI4odVk7TjGkWuIpumczQhQdLHQ/exec';
+
+		if (!form || !submitButton || !status) {
+			return;
+		}
+
+		function getFieldValue(id) {
+			var field = document.getElementById(id);
+			return field ? field.value.trim() : '';
+		}
+
+		function setStatus(message, type) {
+			status.textContent = message;
+			status.className = 'booking-form-status';
+			if (type) {
+				status.className += ' is-' + type;
+			}
+		}
+
+		function setLoading(isLoading) {
+			submitButton.disabled = isLoading;
+			submitButton.textContent = isLoading ? 'Sending...' : 'Send Booking Request';
+		}
+
+		function buildPayload() {
+			var preferredTimeInput = document.getElementById('booking-time-input');
+			var preferredTime = normalizeBookingTimeValue(preferredTimeInput ? preferredTimeInput.value : getFieldValue('booking-time'));
+
+			if (preferredTime !== null) {
+				document.getElementById('booking-time').value = preferredTime;
+				if (preferredTimeInput && preferredTime) {
+					preferredTimeInput.value = preferredTime;
+				}
+			}
+
+			return {
+				name: getFieldValue('booking-name'),
+				email: getFieldValue('booking-email'),
+				phone: getFieldValue('booking-phone'),
+				goalie_age: getFieldValue('booking-age-group'),
+				preferred_date: getFieldValue('booking-date'),
+				training_type: getFieldValue('booking-format'),
+				preferred_time: preferredTime === null ? (preferredTimeInput ? preferredTimeInput.value.trim() : getFieldValue('booking-time')) : preferredTime,
+				message: getFieldValue('booking-message'),
+				source: 'website'
+			};
+		}
+
+		function validatePayload(payload) {
+			if (!payload.name) {
+				return 'Please enter parent or player name.';
+			}
+			if (!payload.training_type) {
+				return 'Please choose a training format.';
+			}
+			if (!payload.email && !payload.phone) {
+				return 'Please enter an email or phone number.';
+			}
+			if (payload.preferred_time && !normalizeBookingTimeValue(payload.preferred_time)) {
+				return 'Please enter preferred time between 07:00 and 21:45.';
+			}
+			return '';
+		}
+
+		function encodePayload(payload) {
+			var body = new URLSearchParams();
+			Object.keys(payload).forEach(function(key) {
+				body.append(key, payload[key]);
+			});
+			return body;
+		}
+
+		function submitBookingRequest() {
+			var payload = buildPayload();
+			var validationError = validatePayload(payload);
+
+			if (validationError) {
+				setStatus(validationError, 'error');
+				return;
+			}
+
+			setLoading(true);
+			setStatus('', '');
+
+			fetch(endpoint, {
+				method: 'POST',
+				body: encodePayload(payload)
+			})
+			.then(function(response) {
+				if (!response.ok) {
+					throw new Error('Booking request failed.');
+				}
+				return response.text();
+			})
+			.then(function() {
+				setStatus('Thank you! Your booking request has been sent.', 'success');
+				form.reset();
+			})
+			.catch(function() {
+				setStatus('Sorry, something went wrong. Please try again or contact us directly.', 'error');
+			})
+			.finally(function() {
+				setLoading(false);
+			});
+		}
+
+		submitButton.addEventListener('click', submitBookingRequest);
+		form.addEventListener('submit', function(event) {
+			event.preventDefault();
+			submitBookingRequest();
+		});
+	}
+
 	function initScheduleCalendar() {
 		var calendarGrid = document.getElementById('schedule-calendar-grid');
 		var monthLabel = document.getElementById('schedule-month-label');
@@ -387,8 +881,14 @@
 	}
 
 	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', initScheduleCalendar);
+		document.addEventListener('DOMContentLoaded', function() {
+			initBookingTimePicker();
+			initBookingFormSubmission();
+			initScheduleCalendar();
+		});
 	} else {
+		initBookingTimePicker();
+		initBookingFormSubmission();
 		initScheduleCalendar();
 	}
 

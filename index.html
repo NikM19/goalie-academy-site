@@ -547,22 +547,22 @@
 							<div class="row">
 								<div class="col-md-6">
 									<div class="form-group">
-										<input class="form-control" id="booking-name" type="text" placeholder="Parent / Player name">
+										<input class="form-control" id="booking-name" name="name" type="text" placeholder="Parent / Player name">
 									</div>
 								</div>
 								<div class="col-md-6">
 									<div class="form-group">
-										<input class="form-control" id="booking-email" type="email" placeholder="Email">
+										<input class="form-control" id="booking-email" name="email" type="email" placeholder="Email">
 									</div>
 								</div>
 								<div class="col-md-6">
 									<div class="form-group">
-										<input class="form-control" id="booking-phone" type="tel" placeholder="Phone / WhatsApp">
+										<input class="form-control" id="booking-phone" name="phone" type="tel" placeholder="Phone / WhatsApp">
 									</div>
 								</div>
 								<div class="col-md-6">
 									<div class="form-group">
-										<select class="form-control" id="booking-age-group">
+										<select class="form-control" id="booking-age-group" name="goalie_age">
 											<option value="">Player age group</option>
 											<option>U7&ndash;U10</option>
 											<option>U11&ndash;U14</option>
@@ -578,7 +578,28 @@
 								</div>
 								<div class="col-md-6">
 									<div class="form-group">
-										<select class="form-control" id="booking-format">
+										<input id="booking-time" name="preferred_time" type="hidden">
+										<div class="booking-time-picker" data-time-picker>
+											<div class="booking-time-field">
+												<input id="booking-time-input" type="text" inputmode="numeric" autocomplete="off" placeholder="Preferred time" aria-label="Preferred time">
+												<button class="booking-time-trigger" id="booking-time-trigger" type="button" aria-label="Open preferred time picker" aria-haspopup="dialog" aria-expanded="false" aria-controls="booking-time-popover">
+													<i class="fa fa-clock-o" aria-hidden="true"></i>
+												</button>
+											</div>
+											<div class="booking-time-popover" id="booking-time-popover" role="dialog" aria-label="Preferred time picker" hidden>
+												<div class="booking-time-wheel" aria-label="Hour" role="listbox" tabindex="0" data-time-hours></div>
+												<div class="booking-time-colon" aria-hidden="true">:</div>
+												<div class="booking-time-wheel" aria-label="Minute" role="listbox" tabindex="0" data-time-minutes></div>
+												<div class="booking-time-actions">
+													<button class="booking-time-action is-primary" type="button" data-time-done>Done</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<select class="form-control" id="booking-format" name="training_type">
 											<option value="">Training format</option>
 											<option>Individual Training</option>
 											<option>Mini-Groups</option>
@@ -593,8 +614,11 @@
 								</div>
 								<div class="col-md-12">
 									<div class="form-group">
-										<textarea class="form-control" id="booking-message" placeholder="Message / preferred time"></textarea>
+										<textarea class="form-control" id="booking-message" name="message" placeholder="Message"></textarea>
 									</div>
+								</div>
+								<div class="col-md-12">
+									<div id="booking-form-status" class="booking-form-status" aria-live="polite"></div>
 								</div>
 								<div class="col-lg-12 text-center">
 									<button id="sendBookingButton" class="sim-btn hvr-bounce-to-top" type="button">Send Booking Request</button>

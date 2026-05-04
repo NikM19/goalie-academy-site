@@ -3155,6 +3155,195 @@ select.mobile-device {
 	padding-bottom: 0;
 }
 
+#contacts .booking-time-picker{
+	margin-bottom: 24px;
+	position: relative;
+}
+
+#contacts .booking-time-field{
+	align-items: center;
+	background-color: #ffffff;
+	border: 1px solid #dfe4e8;
+	border-radius: 4px;
+	display: flex;
+	height: 56px;
+	transition: all 0.3s ease-in-out 0s;
+	width: 100%;
+}
+
+#contacts .booking-time-field:focus-within,
+#contacts .booking-time-picker.is-open .booking-time-field{
+	border-color: #de1316;
+	box-shadow: 0 0 0 3px rgba(222,19,22,0.12);
+}
+
+#contacts .booking-time-field input{
+	background: transparent;
+	border: 0;
+	color: #333333;
+	flex: 1 1 auto;
+	font-size: 14px;
+	height: 54px;
+	min-width: 0;
+	outline: none;
+	padding: 0 0 0 18px;
+}
+
+#contacts .booking-time-field input::-webkit-input-placeholder{
+	color: #7b858d;
+}
+
+#contacts .booking-time-field input::-moz-placeholder{
+	color: #7b858d;
+	opacity: 1;
+}
+
+#contacts .booking-time-field input::-ms-input-placeholder{
+	color: #7b858d;
+}
+
+#contacts .booking-time-trigger{
+	align-items: center;
+	background: transparent;
+	border: 0;
+	color: #de1316;
+	cursor: pointer;
+	display: flex;
+	flex: 0 0 48px;
+	height: 54px;
+	justify-content: center;
+	outline: none;
+	padding: 0;
+}
+
+#contacts .booking-time-trigger:focus,
+#contacts .booking-time-trigger[aria-expanded="true"]{
+	color: #de1316;
+}
+
+#contacts .booking-time-trigger i{
+	font-size: 18px;
+}
+
+#contacts .booking-time-popover{
+	background: #ffffff;
+	border: 1px solid rgba(34,39,43,0.08);
+	border-radius: 10px;
+	box-shadow: 0 18px 42px rgba(20,24,28,0.16);
+	display: grid;
+	gap: 10px;
+	grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+	left: 0;
+	padding: 14px;
+	position: absolute;
+	right: 0;
+	top: calc(100% + 8px);
+	z-index: 20;
+}
+
+#contacts .booking-time-popover[hidden]{
+	display: none;
+}
+
+#contacts .booking-time-wheel{
+	background: #f7f8f9;
+	border-radius: 8px;
+	max-height: 156px;
+	overflow-y: auto;
+	padding: 46px 6px;
+	scrollbar-width: thin;
+}
+
+#contacts .booking-time-wheel:focus{
+	box-shadow: 0 0 0 3px rgba(222,19,22,0.12);
+	outline: none;
+}
+
+#contacts .booking-time-option{
+	background: transparent;
+	border: 0;
+	border-radius: 6px;
+	color: #555f66;
+	cursor: pointer;
+	display: block;
+	font-size: 20px;
+	font-weight: 700;
+	height: 36px;
+	line-height: 36px;
+	margin: 0 auto 8px;
+	outline: none;
+	text-align: center;
+	width: 100%;
+}
+
+#contacts .booking-time-option:last-child{
+	margin-bottom: 0;
+}
+
+#contacts .booking-time-option:hover,
+#contacts .booking-time-option:focus{
+	background: rgba(222,19,22,0.08);
+	color: #de1316;
+}
+
+#contacts .booking-time-option.is-selected{
+	background: #de1316;
+	color: #ffffff;
+}
+
+#contacts .booking-time-colon{
+	align-self: center;
+	color: #333333;
+	font-size: 22px;
+	font-weight: 800;
+	padding-bottom: 40px;
+}
+
+#contacts .booking-time-actions{
+	display: flex;
+	gap: 10px;
+	grid-column: 1 / -1;
+	justify-content: center;
+}
+
+#contacts .booking-time-action{
+	border: 0;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 700;
+	outline: none;
+	padding: 10px 14px;
+	transition: all 0.2s ease-in-out 0s;
+	min-width: 112px;
+}
+
+#contacts .booking-time-action:hover,
+#contacts .booking-time-action:focus{
+	box-shadow: 0 0 0 3px rgba(222,19,22,0.12);
+}
+
+#contacts .booking-time-action.is-primary{
+	background: #24282c;
+	color: #ffffff;
+}
+
+#contacts .booking-time-action.is-primary:hover,
+#contacts .booking-time-action.is-primary:focus{
+	background: #de1316;
+	color: #ffffff;
+}
+
+@media (max-width: 480px) {
+	#contacts .booking-time-popover{
+		padding: 12px;
+	}
+
+	#contacts .booking-time-option{
+		font-size: 18px;
+	}
+}
+
 #contacts .contact_form textarea{
 	color: #333333;
 	height: 170px !important;
@@ -3176,6 +3365,34 @@ select.mobile-device {
 
 #contacts .contact_form textarea.form-control{
 	min-height: 170px;
+}
+
+.booking-form-status{
+	border-radius: 4px;
+	display: none;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.5;
+	margin: 0 0 22px;
+	padding: 12px 14px;
+	text-align: center;
+}
+
+.booking-form-status.is-success,
+.booking-form-status.is-error{
+	display: block;
+}
+
+.booking-form-status.is-success{
+	background: rgba(48,136,84,0.1);
+	border: 1px solid rgba(48,136,84,0.22);
+	color: #247046;
+}
+
+.booking-form-status.is-error{
+	background: rgba(222,19,22,0.08);
+	border: 1px solid rgba(222,19,22,0.22);
+	color: #de1316;
 }
 
 .contact-card-heading{

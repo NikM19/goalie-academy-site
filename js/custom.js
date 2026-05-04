@@ -547,6 +547,7 @@
 		var selectedDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 		var monthFormatter = new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric' });
 		var selectedDateFormatter = new Intl.DateTimeFormat('en', { month: 'long', day: 'numeric', year: 'numeric' });
+		var isScheduleLoading = typeof fetch === 'function';
 
 		var byRequestItem = {
 			title: 'Individual Training',
@@ -683,11 +684,14 @@
 			monthlyItems = nextMonthlyItems;
 			exactDateItems = nextExactDateItems;
 			scheduleRequestFormats = nextRequestFormats;
+			isScheduleLoading = false;
 			renderSchedule();
 		}
 
 		function loadLiveScheduleItems() {
 			if (typeof fetch !== 'function') {
+				isScheduleLoading = false;
+				renderSchedule();
 				return;
 			}
 
@@ -710,6 +714,8 @@
 				if (window.console && typeof window.console.warn === 'function') {
 					window.console.warn('Live schedule could not be loaded. Using fallback schedule data.', error);
 				}
+				isScheduleLoading = false;
+				renderSchedule();
 			});
 		}
 
@@ -971,6 +977,21 @@
 			}) : [];
 
 			eventsList.innerHTML = '';
+
+			if (isScheduleLoading) {
+				if (selectedDate) {
+					var loadingSelectedLabel = document.createElement('p');
+					loadingSelectedLabel.className = 'schedule-selected-date';
+					loadingSelectedLabel.textContent = selectedDateFormatter.format(selectedDate);
+					eventsList.appendChild(loadingSelectedLabel);
+				}
+
+				var loadingNote = document.createElement('p');
+				loadingNote.className = 'schedule-empty-note';
+				loadingNote.textContent = 'Loading schedule...';
+				eventsList.appendChild(loadingNote);
+				return;
+			}
 
 			if (selectedDate) {
 				var selectedLabel = document.createElement('p');

@@ -65,7 +65,7 @@ Sheets:
 
 Bookings columns:
 
-`timestamp | name | goalie_age | training_type | preferred_date | preferred_time | phone | email | message | source`
+`timestamp | name | goalie_age | training_type | preferred_date | preferred_time | phone | email | message | source | status | notes`
 
 Schedule columns:
 
@@ -80,9 +80,10 @@ Schedule date rules:
 Schedule data flow:
 
 - Schedule reads public live JSON from Google Apps Script GET endpoint: `https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=schedule`
-- Booking form still submits to Google Apps Script through POST and saves to the `Bookings` sheet
+- Booking form submits to the same unified Google Apps Script Web App base URL through POST and saves to the `Bookings` sheet
 - Apps Script `doGet(e)` handles public Schedule JSON
-- Apps Script `doPost(e)` handles booking submissions
+- Apps Script `doPost(e)` handles booking submissions, adds `status = new`, and leaves `notes` empty
+- Booking status can then be changed manually in Google Sheets
 - If the Schedule fetch fails or returns invalid data, the site keeps the static fallback schedule data
 - Testing notes: check Schedule navigation, exact-date markers, Request Availability prefill, and booking form validation
 
@@ -137,6 +138,7 @@ Schedule data flow:
 - [x] Contact form focus styling updated from browser blue to Goalie Academy brand red
 - [x] Book Training form connected to Google Apps Script and Google Sheets
 - [x] Booking requests save to the `Bookings` sheet
+- [x] Booking POST updated to the unified Apps Script endpoint; new rows receive `status = new` and empty `notes`
 - [x] Booking form sends name, goalie_age, training_type, preferred_date, preferred_time, phone, email, message, and source
 - [x] Preferred time custom wheel picker added
 - [x] Manual Preferred time input syncs with the wheel picker

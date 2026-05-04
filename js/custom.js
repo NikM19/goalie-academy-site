@@ -5,7 +5,7 @@
 (function($) {
     "use strict";
 
-	var bookingRequestsEndpoint = 'https://script.google.com/macros/s/AKfycbzPvbCS8LJgi82QBkpXpaFOzKJCDeUHPn_4ezo2uxmcI4odVk7TjGkWuIpumczQhQdLHQ/exec';
+	var bookingRequestsEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec';
 	var scheduleEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=schedule';
 
 	

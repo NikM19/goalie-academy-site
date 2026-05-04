@@ -644,7 +644,7 @@
 			var nextByRequestItem = null;
 			var nextMonthlyItems = [];
 			var nextExactDateItems = [];
-			var nextRequestFormats = fallbackRequestFormats.slice();
+			var nextRequestFormats = [];
 
 			getSortedScheduleItems(items).forEach(function(rawItem) {
 				var item = createScheduleItem(rawItem);

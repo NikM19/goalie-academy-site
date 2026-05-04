@@ -106,6 +106,7 @@ Bookings columns:
 - [x] Method and Philosophy tabs updated with skill/value panels
 - [x] Coach / Academy tabs updated with brand color capsule states
 - [x] Coach / Academy section updated with full-section local video background `videos/coach-academy-bg.mp4`, dark overlay, and glass-style content card
+- [x] Coach / Academy background video optimized for web use: same `videos/coach-academy-bg.mp4` path, H.264 MP4, audio removed, about 23 MB
 - [x] Buttons linked to #booking and #programs
 - [x] Section checked on desktop and mobile
 - [x] Booking section updated with live training request form

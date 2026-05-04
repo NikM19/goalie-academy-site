@@ -1,2 +1,107 @@
 
 /** ADD YOUR AWESOME CODES HERE **/
+
+.navbar-brand:focus-visible,
+#mainNav .navbar-nav .nav-link:focus-visible {
+	outline: 2px solid rgba(222, 19, 22, 0.78);
+	outline-offset: 3px;
+	box-shadow:
+		0 0 0 3px rgba(255, 255, 255, 0.28),
+		0 0 0 6px rgba(222, 19, 22, 0.18);
+}
+
+#coach .coach-tabs .nav-link:focus-visible,
+.footer-distributed .footer-logo:focus-visible,
+.footer-distributed .footer-nav a:focus-visible,
+#scroll-to-top:focus-visible {
+	outline: 2px solid rgba(222, 19, 22, 0.78);
+	outline-offset: 3px;
+	box-shadow: 0 0 0 3px rgba(222, 19, 22, 0.16);
+}
+
+#schedule .schedule-nav-button:focus,
+#schedule .schedule-nav-button:focus-visible,
+#schedule .schedule-nav-button:active:focus,
+#schedule .schedule-today-button:focus,
+#schedule .schedule-today-button:focus-visible,
+#schedule .schedule-today-button:active:focus {
+	background: #ffffff;
+	border-color: rgba(222, 19, 22, 0.78);
+	color: #de1316;
+	outline: none !important;
+	box-shadow: none !important;
+}
+
+#contacts #bookingRequestForm .form-control:focus {
+	border-color: #de1316;
+	outline: none;
+	box-shadow: none !important;
+}
+
+#contacts #bookingRequestForm .booking-time-field:focus-within,
+#contacts #bookingRequestForm .booking-time-picker.is-open .booking-time-field {
+	border-color: #de1316;
+	box-shadow: none;
+}
+
+#contacts #bookingRequestForm .booking-time-wheel:focus,
+#contacts #bookingRequestForm .booking-time-action:focus {
+	outline: 1px solid rgba(222, 19, 22, 0.78);
+	outline-offset: 2px;
+	box-shadow: none;
+}
+
+@media only screen and (min-width: 992px) {
+	.quick-contact-box {
+		--booking-heading-track: 74px;
+		--booking-row-height: 56px;
+		--booking-row-gap: 24px;
+		--booking-message-height: 170px;
+		align-content: start;
+		grid-template-rows:
+			var(--booking-heading-track)
+			var(--booking-row-height)
+			var(--booking-row-height)
+			calc(var(--booking-row-height) + var(--booking-row-height) + var(--booking-row-gap) + var(--booking-row-gap) + var(--booking-message-height));
+		row-gap: var(--booking-row-gap);
+	}
+
+	.quick-contact-box h4,
+	.quick-contact-actions,
+	.quick-contact-address,
+	.quick-contact-map {
+		margin: 0;
+		transform: none;
+	}
+
+	.quick-contact-box h4 {
+		align-self: start;
+	}
+
+	.quick-contact-actions,
+	.quick-contact-address {
+		align-self: center;
+	}
+
+	.quick-contact-actions,
+	.quick-contact-address,
+	.quick-contact-map {
+		transform: translateY(25px);
+	}
+
+	.quick-contact-map {
+		align-self: stretch;
+		height: auto;
+		min-height: 0;
+	}
+}
+
+#sendBookingButton:focus,
+#sendBookingButton:focus-visible,
+#sendBookingButton:active:focus {
+	background-color: #de1316;
+	border-color: #de1316;
+	color: #ffffff;
+	outline: none !important;
+	box-shadow: none !important;
+}

@@ -5,6 +5,9 @@
 (function($) {
     "use strict";
 
+	var bookingRequestsEndpoint = 'https://script.google.com/macros/s/AKfycbzPvbCS8LJgi82QBkpXpaFOzKJCDeUHPn_4ezo2uxmcI4odVk7TjGkWuIpumczQhQdLHQ/exec';
+	var scheduleEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=schedule';
+
 	
 	// Smooth scrolling using jQuery easing
 	  $('a.js-scroll-trigger[href*="#"]:not([href="#"])').click(function() {
@@ -415,7 +418,6 @@
 		var form = document.getElementById('bookingRequestForm');
 		var submitButton = document.getElementById('sendBookingButton');
 		var status = document.getElementById('booking-form-status');
-		var endpoint = 'https://script.google.com/macros/s/AKfycbzPvbCS8LJgi82QBkpXpaFOzKJCDeUHPn_4ezo2uxmcI4odVk7TjGkWuIpumczQhQdLHQ/exec';
 
 		if (!form || !submitButton || !status) {
 			return;
@@ -499,7 +501,7 @@
 			setLoading(true);
 			setStatus('', '');
 
-			fetch(endpoint, {
+			fetch(bookingRequestsEndpoint, {
 				method: 'POST',
 				body: encodePayload(payload)
 			})
@@ -580,6 +582,136 @@
 		];
 
 		var exactDateItems = [];
+		var fallbackRequestFormats = [
+			'Individual Training',
+			'Mini-Groups',
+			'Group Training',
+			'Video Analysis'
+		];
+		var scheduleRequestFormats = fallbackRequestFormats.slice();
+
+		function normalizeScheduleText(value) {
+			return String(value || '').trim();
+		}
+
+		function getScheduleStatusClass(status) {
+			var normalizedStatus = normalizeScheduleText(status).toLowerCase();
+			if (normalizedStatus.indexOf('available') !== -1 || normalizedStatus.indexOf('ask') !== -1 || normalizedStatus.indexOf('open') !== -1) {
+				return 'is-available';
+			}
+			return '';
+		}
+
+		function createScheduleItem(item) {
+			var status = normalizeScheduleText(item.status);
+			return {
+				id: normalizeScheduleText(item.id),
+				title: normalizeScheduleText(item.title),
+				date: normalizeScheduleText(item.date),
+				dateLabel: normalizeScheduleText(item.date_label) || normalizeScheduleText(item.date),
+				time: normalizeScheduleText(item.time),
+				type: normalizeScheduleText(item.type),
+				age: normalizeScheduleText(item.age),
+				location: normalizeScheduleText(item.location),
+				status: status,
+				statusClass: getScheduleStatusClass(status),
+				trainingFormat: normalizeScheduleText(item.training_format),
+				description: normalizeScheduleText(item.description)
+			};
+		}
+
+		function addScheduleRequestFormat(format, formats) {
+			var normalizedFormat = normalizeScheduleText(format);
+			if (normalizedFormat && formats.indexOf(normalizedFormat) === -1) {
+				formats.push(normalizedFormat);
+			}
+		}
+
+		function getSortedScheduleItems(items) {
+			return items.slice().sort(function(firstItem, secondItem) {
+				var firstOrder = Number(firstItem.display_order);
+				var secondOrder = Number(secondItem.display_order);
+				firstOrder = isFinite(firstOrder) ? firstOrder : 999;
+				secondOrder = isFinite(secondOrder) ? secondOrder : 999;
+
+				return (firstOrder - secondOrder) ||
+					normalizeScheduleText(firstItem.date).localeCompare(normalizeScheduleText(secondItem.date)) ||
+					normalizeScheduleText(firstItem.title).localeCompare(normalizeScheduleText(secondItem.title));
+			});
+		}
+
+		function applyLiveScheduleItems(items) {
+			var nextByRequestItem = null;
+			var nextMonthlyItems = [];
+			var nextExactDateItems = [];
+			var nextRequestFormats = fallbackRequestFormats.slice();
+
+			getSortedScheduleItems(items).forEach(function(rawItem) {
+				var item = createScheduleItem(rawItem);
+				var monthMatch = item.date.match(/^(\d{4})-(\d{2})$/);
+
+				if (!item.title) {
+					return;
+				}
+
+				if (!item.date) {
+					item.dateLabel = item.dateLabel || 'By request';
+					addScheduleRequestFormat(item.trainingFormat || item.title, nextRequestFormats);
+					if (!nextByRequestItem) {
+						nextByRequestItem = item;
+					}
+					return;
+				}
+
+				if (/^\d{4}-\d{2}-\d{2}$/.test(item.date)) {
+					nextExactDateItems.push(item);
+					addScheduleRequestFormat(item.trainingFormat, nextRequestFormats);
+					return;
+				}
+
+				if (monthMatch) {
+					item.year = parseInt(monthMatch[1], 10);
+					item.month = parseInt(monthMatch[2], 10) - 1;
+					nextMonthlyItems.push(item);
+					addScheduleRequestFormat(item.trainingFormat, nextRequestFormats);
+				}
+			});
+
+			if (nextByRequestItem) {
+				byRequestItem = nextByRequestItem;
+			}
+			monthlyItems = nextMonthlyItems;
+			exactDateItems = nextExactDateItems;
+			scheduleRequestFormats = nextRequestFormats;
+			renderSchedule();
+		}
+
+		function loadLiveScheduleItems() {
+			if (typeof fetch !== 'function') {
+				return;
+			}
+
+			fetch(scheduleEndpoint, {
+				cache: 'no-store'
+			})
+			.then(function(response) {
+				if (!response.ok) {
+					throw new Error('Schedule request failed.');
+				}
+				return response.json();
+			})
+			.then(function(data) {
+				if (!data || data.ok !== true || !Array.isArray(data.items)) {
+					throw new Error('Schedule response was not valid.');
+				}
+				applyLiveScheduleItems(data.items);
+			})
+			.catch(function(error) {
+				if (window.console && typeof window.console.warn === 'function') {
+					window.console.warn('Live schedule could not be loaded. Using fallback schedule data.', error);
+				}
+			});
+		}
 
 		function getDaysInMonth(year, month) {
 			return new Date(year, month + 1, 0).getDate();
@@ -601,6 +733,21 @@
 				year === selectedDate.getFullYear() &&
 				month === selectedDate.getMonth() &&
 				day === selectedDate.getDate();
+		}
+
+		function getExactDateItemsForDate(dateKey) {
+			return exactDateItems.filter(function(item) {
+				return item.date === dateKey;
+			});
+		}
+
+		function getExactDateItemsForMonth(year, month) {
+			return exactDateItems.filter(function(item) {
+				var itemDate = item.date.match(/^(\d{4})-(\d{2})-\d{2}$/);
+				return itemDate &&
+					parseInt(itemDate[1], 10) === year &&
+					parseInt(itemDate[2], 10) === month + 1;
+			});
 		}
 
 		function createDetail(iconClass, text) {
@@ -672,13 +819,7 @@
 		}
 
 		function renderDateFallback() {
-			var fallbackFormats = [
-				'Individual Training',
-				'Mini-Groups',
-				'Group Training',
-				'Video Analysis'
-			];
-			var selectedFormat = fallbackFormats[0];
+			var selectedFormat = scheduleRequestFormats[0];
 			var fallback = document.createElement('div');
 			var title = document.createElement('h4');
 			var text = document.createElement('p');
@@ -701,7 +842,7 @@
 			}
 			buttonText.textContent = 'Request Availability';
 
-			fallbackFormats.forEach(function(format) {
+			scheduleRequestFormats.forEach(function(format) {
 				var option = createRequestOption(format, format, format === selectedFormat);
 				option.addEventListener('click', function() {
 					var allOptions = options.querySelectorAll('.schedule-request-option');
@@ -781,6 +922,15 @@
 					day.setAttribute('aria-current', 'date');
 				}
 
+				if (!isMuted) {
+					var dateKey = formatDateKey(new Date(cellYear, cellMonth, displayNumber));
+					var dayExactItems = getExactDateItemsForDate(dateKey);
+					if (dayExactItems.length) {
+						day.className += ' is-today';
+						day.setAttribute('data-schedule-event-date', dateKey);
+					}
+				}
+
 				if (!isMuted && isSelectedDate(cellYear, cellMonth, displayNumber)) {
 					day.className += ' is-selected';
 					day.setAttribute('aria-pressed', 'true');
@@ -789,7 +939,13 @@
 				}
 
 				if (!isMuted) {
-					day.setAttribute('aria-label', 'Select ' + selectedDateFormatter.format(new Date(cellYear, cellMonth, displayNumber)));
+					var ariaLabel = 'Select ' + selectedDateFormatter.format(new Date(cellYear, cellMonth, displayNumber));
+					if (dayExactItems && dayExactItems.length) {
+						ariaLabel += ' - ' + dayExactItems.map(function(item) {
+							return item.title;
+						}).join(', ');
+					}
+					day.setAttribute('aria-label', ariaLabel);
 					day.addEventListener('click', function(date) {
 						return function() {
 							selectedDate = date;
@@ -809,6 +965,7 @@
 			var visibleMonthlyItems = monthlyItems.filter(function(item) {
 				return item.year === year && item.month === month;
 			});
+			var visibleExactMonthItems = getExactDateItemsForMonth(year, month);
 			var visibleExactItems = selectedDate ? exactDateItems.filter(function(item) {
 				return item.date === formatDateKey(selectedDate);
 			}) : [];
@@ -834,8 +991,11 @@
 
 			eventsList.appendChild(createEventItem(byRequestItem));
 
-			if (visibleMonthlyItems.length) {
+			if (visibleMonthlyItems.length || visibleExactMonthItems.length) {
 				visibleMonthlyItems.forEach(function(item) {
+					eventsList.appendChild(createEventItem(item));
+				});
+				visibleExactMonthItems.forEach(function(item) {
 					eventsList.appendChild(createEventItem(item));
 				});
 			} else {
@@ -878,6 +1038,7 @@
 		});
 
 		renderSchedule();
+		loadLiveScheduleItems();
 	}
 
 	if (document.readyState === 'loading') {

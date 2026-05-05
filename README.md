@@ -65,7 +65,7 @@ Sheets:
 
 Bookings columns:
 
-`timestamp | name | goalie_age | training_type | preferred_date | preferred_time | phone | email | message | source | status | notes`
+`timestamp | name | goalie_age | training_type | preferred_date | preferred_time | phone | email | message | source | status | notes | booking_id`
 
 Schedule columns:
 
@@ -82,12 +82,51 @@ Schedule data flow:
 - Schedule reads public live JSON from Google Apps Script GET endpoint: `https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=schedule`
 - Booking form submits to the same unified Google Apps Script Web App base URL through POST and saves to the `Bookings` sheet
 - Apps Script `doGet(e)` handles public Schedule JSON
-- Apps Script `doPost(e)` handles booking submissions, adds `status = new`, and leaves `notes` empty
+- Apps Script `doPost(e)` handles booking submissions, adds `status = new`, leaves `notes` empty, and generates `booking_id`
 - Booking status can then be changed manually in Google Sheets
 - After a successful live Schedule fetch, fallback/request option cards use only active live Schedule items; inactive Google Sheets rows stay hidden from the option list
 - On initial page load, Schedule waits for live data before showing fallback/request options to avoid flashing incomplete static fallback data
 - If the Schedule fetch fails or returns invalid data, the site keeps the static fallback schedule data
 - Testing notes: check Schedule navigation, exact-date markers, Request Availability prefill, and booking form validation
+
+## Telegram booking CRM
+
+- Apps Script sends a Telegram notification after each booking row is appended to the `Bookings` sheet
+- New booking rows receive `status = new`, empty `notes`, and a server-generated `booking_id`
+- Telegram notification buttons update Google Sheets status by `booking_id`: Contacted -> `contacted`, Confirmed -> `confirmed`, Cancelled -> `cancelled`
+- Telegram messages update after a status button is used
+- Telegram `/start` and other non-callback updates are ignored and do not create booking rows
+- Status updates are restricted to the authorized admin by `TELEGRAM_ADMIN_USER_ID`
+
+Required Apps Script Properties:
+
+- `TELEGRAM_BOT_TOKEN`
+- `TELEGRAM_ADMIN_CHAT_ID`
+- `TELEGRAM_ADMIN_USER_ID`
+
+Security notes:
+
+- Do not commit Telegram secrets
+- Do not include the actual bot token in repository files
+- Do not expose private Google Sheets edit links
+- Store Telegram values only in Apps Script Properties
+
+Telegram webhook:
+
+- Required for Telegram status buttons
+- Set webhook: `https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/setWebhook?url=<WEB_APP_URL>`
+- Check webhook: `https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/getWebhookInfo`
+- Rollback webhook: `https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/deleteWebhook`
+
+Telegram CRM testing checklist:
+
+1. Submit booking
+2. Confirm row appears
+3. Confirm status `new`, notes empty, and `booking_id` present
+4. Confirm Telegram message and buttons arrive
+5. Test Contacted / Confirmed / Cancelled buttons
+6. Confirm `/start` does not create a booking
+7. Confirm Schedule still loads
 
 ## Current progress
 
@@ -141,6 +180,7 @@ Schedule data flow:
 - [x] Book Training form connected to Google Apps Script and Google Sheets
 - [x] Booking requests save to the `Bookings` sheet
 - [x] Booking POST updated to the unified Apps Script endpoint; new rows receive `status = new` and empty `notes`
+- [x] Booking rows include server-generated `booking_id` for Telegram CRM status updates
 - [x] Booking form sends name, goalie_age, training_type, preferred_date, preferred_time, phone, email, message, and source
 - [x] Preferred time custom wheel picker added
 - [x] Manual Preferred time input syncs with the wheel picker
@@ -186,7 +226,7 @@ Schedule data flow:
 - [ ] Replace placeholder contact links with real email, phone, WhatsApp, and Instagram links
 - [x] Connect Schedule calendar to live Google Sheets data / dynamic sync
 - [ ] Optionally delete retained legacy files `js/contact_me.js` and `js/jqBootstrapValidation.js` after a final regression pass
-- [ ] Add Telegram notification
+- [x] Add Telegram booking notification and admin status buttons
 - [ ] Publish with GitHub Pages
 
 ## Useful links

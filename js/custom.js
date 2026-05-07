@@ -7,6 +7,7 @@
 
 	var bookingRequestsEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec';
 	var scheduleEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=schedule';
+	var programsEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=programs';
 
 	
 	// Smooth scrolling using jQuery easing
@@ -527,6 +528,134 @@
 		form.addEventListener('submit', function(event) {
 			event.preventDefault();
 			submitBookingRequest();
+		});
+	}
+
+	function initPrograms() {
+		var programsRow = document.querySelector('#programs .programs-row');
+
+		if (!programsRow || typeof fetch !== 'function') {
+			return;
+		}
+
+		function normalizeProgramText(value) {
+			return String(value || '').trim();
+		}
+
+		function getSortedProgramItems(items) {
+			return items.slice().sort(function(firstItem, secondItem) {
+				var firstOrder = Number(firstItem.display_order);
+				var secondOrder = Number(secondItem.display_order);
+				firstOrder = isFinite(firstOrder) ? firstOrder : 999;
+				secondOrder = isFinite(secondOrder) ? secondOrder : 999;
+
+				return (firstOrder - secondOrder) ||
+					normalizeProgramText(firstItem.title).localeCompare(normalizeProgramText(secondItem.title));
+			});
+		}
+
+		function createProgramDetail(label, value) {
+			var item = document.createElement('li');
+			var strong = document.createElement('strong');
+
+			strong.textContent = label + ':';
+			item.appendChild(strong);
+			item.appendChild(document.createTextNode(' ' + value));
+
+			return item;
+		}
+
+		function createProgramCard(item) {
+			var column = document.createElement('div');
+			var card = document.createElement('div');
+			var header = document.createElement('div');
+			var label = document.createElement('span');
+			var title = document.createElement('h2');
+			var body = document.createElement('div');
+			var description = document.createElement('p');
+			var details = document.createElement('ul');
+			var button = document.createElement('a');
+			var buttonText = document.createElement('span');
+			var trainingFormat = normalizeProgramText(item.training_format) || normalizeProgramText(item.title);
+
+			column.className = 'col-md-6';
+			card.className = 'program-card';
+			header.className = 'program-card-header';
+			label.className = 'program-card-label';
+			body.className = 'program-card-body';
+			details.className = 'program-card-details';
+			button.className = 'sim-btn hvr-bounce-to-top';
+			button.href = '#contacts';
+			button.setAttribute('data-training-format', trainingFormat);
+
+			label.textContent = normalizeProgramText(item.label);
+			title.textContent = normalizeProgramText(item.title);
+			description.textContent = normalizeProgramText(item.description);
+			buttonText.textContent = normalizeProgramText(item.button_text) || 'Book Training';
+
+			if (normalizeProgramText(item.age)) {
+				details.appendChild(createProgramDetail('Age', normalizeProgramText(item.age)));
+			}
+			if (normalizeProgramText(item.duration)) {
+				details.appendChild(createProgramDetail('Duration', normalizeProgramText(item.duration)));
+			}
+			if (normalizeProgramText(item.price)) {
+				details.appendChild(createProgramDetail('Price', normalizeProgramText(item.price)));
+			}
+			if (normalizeProgramText(item.status)) {
+				details.appendChild(createProgramDetail('Status', normalizeProgramText(item.status)));
+			}
+
+			header.appendChild(label);
+			header.appendChild(title);
+			button.appendChild(buttonText);
+			body.appendChild(description);
+			body.appendChild(details);
+			body.appendChild(button);
+			card.appendChild(header);
+			card.appendChild(body);
+			column.appendChild(card);
+
+			return column;
+		}
+
+		function renderLivePrograms(items) {
+			var fragment = document.createDocumentFragment();
+			var validItems = getSortedProgramItems(items).filter(function(item) {
+				return normalizeProgramText(item.title);
+			});
+
+			if (!validItems.length) {
+				return;
+			}
+
+			validItems.forEach(function(item) {
+				fragment.appendChild(createProgramCard(item));
+			});
+
+			programsRow.innerHTML = '';
+			programsRow.appendChild(fragment);
+		}
+
+		fetch(programsEndpoint, {
+			cache: 'no-store'
+		})
+		.then(function(response) {
+			if (!response.ok) {
+				throw new Error('Programs request failed.');
+			}
+			return response.json();
+		})
+		.then(function(data) {
+			if (!data || data.ok !== true || !Array.isArray(data.items) || !data.items.length) {
+				throw new Error('Programs response was not valid.');
+			}
+			renderLivePrograms(data.items);
+		})
+		.catch(function(error) {
+			if (window.console && typeof window.console.warn === 'function') {
+				window.console.warn('Live programs could not be loaded. Using fallback program cards.', error);
+			}
 		});
 	}
 
@@ -1066,11 +1195,13 @@
 		document.addEventListener('DOMContentLoaded', function() {
 			initBookingTimePicker();
 			initBookingFormSubmission();
+			initPrograms();
 			initScheduleCalendar();
 		});
 	} else {
 		initBookingTimePicker();
 		initBookingFormSubmission();
+		initPrograms();
 		initScheduleCalendar();
 	}
 

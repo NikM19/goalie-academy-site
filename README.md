@@ -99,6 +99,8 @@ Live data flow:
 - Live Programs and Camps cards replace fallback only after valid non-empty responses
 - Programs and Camps use browser cache for faster initial rendering: `sessionStorage` first, `localStorage` second with a 6-hour TTL, and static HTML fallback last
 - Programs and Camps still run a fresh live fetch on every page load; valid non-empty responses refresh the rendered cards and browser cache, while failed/invalid/empty responses keep the current visible cards
+- Programs and Camps refresh live data when the user returns to the browser tab, throttled to once every 5 minutes; failed/invalid/empty refreshes keep the current visible cards
+- Schedule is not refreshed by the Programs/Camps tab-return listener
 - Schedule does not use the Programs/Camps browser cache behavior
 - Program and Camp CTA buttons keep using `data-training-format` so the booking Training format field is prefilled
 - Booking form submits to the same unified Google Apps Script Web App base URL through POST and saves to the `Bookings` sheet
@@ -109,6 +111,11 @@ Live data flow:
 - On initial page load, Schedule waits for live data before showing fallback/request options to avoid flashing incomplete static fallback data
 - If the Schedule fetch fails or returns invalid data, the site keeps the static fallback schedule data
 - Testing notes: check Schedule navigation, exact-date markers, Request Availability prefill, and booking form validation
+
+JavaScript cache busting:
+
+- `js/custom.js` is loaded with a version query, for example `js/custom.js?v=20260508-1`
+- When `js/custom.js` changes in the future, bump the version query in `index.html` so returning visitors receive the updated file
 
 ## Telegram booking CRM
 
@@ -191,6 +198,8 @@ Telegram CRM testing checklist:
 - [x] Programs connected to live Google Sheets data with static fallback cards retained
 - [x] Programs static fallback aligned with current live data
 - [x] Programs and Camps browser cache added to reduce visible fallback-to-live content swapping
+- [x] Programs and Camps refresh live data on tab return with a 5-minute throttle
+- [x] `js/custom.js` cache-busting version query added
 - [x] Camps section updated with three event-style cards
 - [x] Camps cards aligned to equal height
 - [x] Book / Apply buttons linked to #booking

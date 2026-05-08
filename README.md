@@ -62,10 +62,15 @@ Sheets:
 - Reviews
 - Settings
 - Bookings
+- EmailQueue
 
 Bookings columns:
 
 `timestamp | name | goalie_age | training_type | preferred_date | preferred_time | phone | email | message | source | status | notes | booking_id`
+
+EmailQueue columns:
+
+`timestamp | queue_id | booking_id | email_type | chat_id | message_id | status | processing_started_at | processed_at | error | attempt_count | notes`
 
 Schedule columns:
 
@@ -94,9 +99,16 @@ Schedule data flow:
 - Apps Script sends a Telegram notification after each booking row is appended to the `Bookings` sheet
 - New booking rows receive `status = new`, empty `notes`, and a server-generated `booking_id`
 - Telegram notification buttons update Google Sheets status by `booking_id`: Contacted -> `contacted`, Confirmed -> `confirmed`, Cancelled -> `cancelled`
-- Telegram messages update after a status button is used
+- Contacted queues the info email, Confirmed queues the confirmation email, and Cancelled queues the cancellation email
+- After a status action, inline buttons are removed from the Telegram message
+- Email sending is handled asynchronously through the `EmailQueue` sheet
+- `EmailQueue` is processed by a recurring every-minute Apps Script trigger
+- When an email is sent, Telegram sends a separate "Email sent" confirmation message
+- Repeated Telegram callbacks/actions are deduplicated and should not create duplicate email jobs
+- Empty recurring trigger checks are no longer written to `DebugLogs`
 - Telegram `/start` and other non-callback updates are ignored and do not create booking rows
 - Status updates are restricted to the authorized admin by `TELEGRAM_ADMIN_USER_ID`
+- Manual status edits in Google Sheets do not automatically send emails; email sending is triggered by Telegram CRM buttons
 
 Required Apps Script Properties:
 
@@ -125,8 +137,11 @@ Telegram CRM testing checklist:
 3. Confirm status `new`, notes empty, and `booking_id` present
 4. Confirm Telegram message and buttons arrive
 5. Test Contacted / Confirmed / Cancelled buttons
-6. Confirm `/start` does not create a booking
-7. Confirm Schedule still loads
+6. Confirm the matching email job is queued in `EmailQueue`
+7. Confirm Telegram sends a separate "Email sent" message after processing
+8. Confirm repeated button actions do not create duplicate email jobs
+9. Confirm `/start` does not create a booking
+10. Confirm Schedule still loads
 
 ## Current progress
 

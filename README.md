@@ -68,6 +68,14 @@ Bookings columns:
 
 `timestamp | name | goalie_age | training_type | preferred_date | preferred_time | phone | email | message | source | status | notes | booking_id`
 
+Programs columns:
+
+`id | title | description | age | duration | price | status | button_text | training_format | display_order | label`
+
+Camps columns:
+
+`id | title | date | time | location | age | description | price | status | button_text | training_format | label | display_order`
+
 EmailQueue columns:
 
 `timestamp | queue_id | booking_id | email_type | chat_id | message_id | status | processing_started_at | processed_at | error | attempt_count | notes`
@@ -82,11 +90,16 @@ Schedule date rules:
 - `YYYY-MM` = monthly item
 - `YYYY-MM-DD` = exact-date event
 
-Schedule data flow:
+Live data flow:
 
-- Schedule reads public live JSON from Google Apps Script GET endpoint: `https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=schedule`
+- Schedule reads public live JSON from Google Apps Script GET endpoint with `?action=schedule`
+- Programs reads public live JSON from Google Apps Script GET endpoint with `?action=programs`
+- Camps reads public live JSON from Google Apps Script GET endpoint with `?action=camps`
+- Programs and Camps keep static HTML cards as fallback
+- Live Programs and Camps cards replace fallback only after valid non-empty responses
+- Program and Camp CTA buttons keep using `data-training-format` so the booking Training format field is prefilled
 - Booking form submits to the same unified Google Apps Script Web App base URL through POST and saves to the `Bookings` sheet
-- Apps Script `doGet(e)` handles public Schedule JSON
+- Apps Script `doGet(e)` handles public Schedule, Programs, and Camps JSON
 - Apps Script `doPost(e)` handles booking submissions, adds `status = new`, leaves `notes` empty, and generates `booking_id`
 - Booking status can then be changed manually in Google Sheets
 - After a successful live Schedule fetch, fallback/request option cards use only active live Schedule items; inactive Google Sheets rows stay hidden from the option list
@@ -172,11 +185,15 @@ Telegram CRM testing checklist:
 - [x] Video Analysis program card added
 - [x] Programs layout supports desktop 4-column, tablet 2-column, and mobile 1-column behavior
 - [x] Program card top-panel hover animation and hover shadow updated to Goalie Academy brand colors
+- [x] Programs connected to live Google Sheets data with static fallback cards retained
+- [x] Programs static fallback aligned with current live data
 - [x] Camps section updated with three event-style cards
 - [x] Camps cards aligned to equal height
 - [x] Book / Apply buttons linked to #booking
 - [x] Camps card brand colors updated with dark hover fill, light readable hover text, and default card backing removed
 - [x] Camps section checked on desktop and mobile
+- [x] Camps connected to live Google Sheets data with static fallback cards retained
+- [x] Camps live CTA buttons prefill the booking Training format field from live `training_format`
 - [x] Coach / Academy section redesigned as tabbed information block
 - [x] Coach and Academy tabs updated with real images
 - [x] Method and Philosophy tabs updated with skill/value panels

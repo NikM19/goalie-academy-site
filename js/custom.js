@@ -10,8 +10,12 @@
 	var programsEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=programs';
 	var campsEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=camps';
 	var liveDataCacheTtl = 6 * 60 * 60 * 1000;
+	var liveDataFocusRefreshInterval = 5 * 60 * 1000;
 	var programsCacheKey = 'goalieAcademy.programs.v1';
 	var campsCacheKey = 'goalieAcademy.camps.v1';
+	var refreshProgramsLiveData = null;
+	var refreshCampsLiveData = null;
+	var lastLiveDataFocusRefreshAt = 0;
 
 	function isValidLiveDataItems(items) {
 		return Array.isArray(items) && items.length > 0;
@@ -702,27 +706,32 @@
 			renderLivePrograms(cachedPrograms);
 		}
 
-		fetch(programsEndpoint, {
-			cache: 'no-store'
-		})
-		.then(function(response) {
-			if (!response.ok) {
-				throw new Error('Programs request failed.');
-			}
-			return response.json();
-		})
-		.then(function(data) {
-			if (!data || data.ok !== true || !Array.isArray(data.items) || !data.items.length) {
-				throw new Error('Programs response was not valid.');
-			}
-			renderLivePrograms(data.items);
-			writeLiveDataCache(programsCacheKey, data.items);
-		})
-		.catch(function(error) {
-			if (window.console && typeof window.console.warn === 'function') {
-				window.console.warn('Live programs could not be loaded. Using fallback program cards.', error);
-			}
-		});
+		function fetchLivePrograms() {
+			fetch(programsEndpoint, {
+				cache: 'no-store'
+			})
+			.then(function(response) {
+				if (!response.ok) {
+					throw new Error('Programs request failed.');
+				}
+				return response.json();
+			})
+			.then(function(data) {
+				if (!data || data.ok !== true || !Array.isArray(data.items) || !data.items.length) {
+					throw new Error('Programs response was not valid.');
+				}
+				renderLivePrograms(data.items);
+				writeLiveDataCache(programsCacheKey, data.items);
+			})
+			.catch(function(error) {
+				if (window.console && typeof window.console.warn === 'function') {
+					window.console.warn('Live programs could not be loaded. Using fallback program cards.', error);
+				}
+			});
+		}
+
+		refreshProgramsLiveData = fetchLivePrograms;
+		fetchLivePrograms();
 	}
 
 	function initCamps() {
@@ -844,25 +853,49 @@
 			renderLiveCamps(cachedCamps);
 		}
 
-		fetch(campsEndpoint, {
-			cache: 'no-store'
-		})
-		.then(function(response) {
-			if (!response.ok) {
-				throw new Error('Camps request failed.');
+		function fetchLiveCamps() {
+			fetch(campsEndpoint, {
+				cache: 'no-store'
+			})
+			.then(function(response) {
+				if (!response.ok) {
+					throw new Error('Camps request failed.');
+				}
+				return response.json();
+			})
+			.then(function(data) {
+				if (!data || data.ok !== true || !Array.isArray(data.items) || !data.items.length) {
+					throw new Error('Camps response was not valid.');
+				}
+				renderLiveCamps(data.items);
+				writeLiveDataCache(campsCacheKey, data.items);
+			})
+			.catch(function(error) {
+				if (window.console && typeof window.console.warn === 'function') {
+					window.console.warn('Live camps could not be loaded. Using fallback camp cards.', error);
+				}
+			});
+		}
+
+		refreshCampsLiveData = fetchLiveCamps;
+		fetchLiveCamps();
+	}
+
+	function initLiveDataFocusRefresh() {
+		document.addEventListener('visibilitychange', function() {
+			var now = Date.now();
+
+			if (document.visibilityState !== 'visible' || now - lastLiveDataFocusRefreshAt < liveDataFocusRefreshInterval) {
+				return;
 			}
-			return response.json();
-		})
-		.then(function(data) {
-			if (!data || data.ok !== true || !Array.isArray(data.items) || !data.items.length) {
-				throw new Error('Camps response was not valid.');
+
+			lastLiveDataFocusRefreshAt = now;
+
+			if (typeof refreshProgramsLiveData === 'function') {
+				refreshProgramsLiveData();
 			}
-			renderLiveCamps(data.items);
-			writeLiveDataCache(campsCacheKey, data.items);
-		})
-		.catch(function(error) {
-			if (window.console && typeof window.console.warn === 'function') {
-				window.console.warn('Live camps could not be loaded. Using fallback camp cards.', error);
+			if (typeof refreshCampsLiveData === 'function') {
+				refreshCampsLiveData();
 			}
 		});
 	}
@@ -1405,6 +1438,7 @@
 			initBookingFormSubmission();
 			initPrograms();
 			initCamps();
+			initLiveDataFocusRefresh();
 			initScheduleCalendar();
 		});
 	} else {
@@ -1412,6 +1446,7 @@
 		initBookingFormSubmission();
 		initPrograms();
 		initCamps();
+		initLiveDataFocusRefresh();
 		initScheduleCalendar();
 	}
 

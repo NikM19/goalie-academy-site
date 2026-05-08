@@ -97,6 +97,9 @@ Live data flow:
 - Camps reads public live JSON from Google Apps Script GET endpoint with `?action=camps`
 - Programs and Camps keep static HTML cards as fallback
 - Live Programs and Camps cards replace fallback only after valid non-empty responses
+- Programs and Camps use browser cache for faster initial rendering: `sessionStorage` first, `localStorage` second with a 6-hour TTL, and static HTML fallback last
+- Programs and Camps still run a fresh live fetch on every page load; valid non-empty responses refresh the rendered cards and browser cache, while failed/invalid/empty responses keep the current visible cards
+- Schedule does not use the Programs/Camps browser cache behavior
 - Program and Camp CTA buttons keep using `data-training-format` so the booking Training format field is prefilled
 - Booking form submits to the same unified Google Apps Script Web App base URL through POST and saves to the `Bookings` sheet
 - Apps Script `doGet(e)` handles public Schedule, Programs, and Camps JSON
@@ -187,6 +190,7 @@ Telegram CRM testing checklist:
 - [x] Program card top-panel hover animation and hover shadow updated to Goalie Academy brand colors
 - [x] Programs connected to live Google Sheets data with static fallback cards retained
 - [x] Programs static fallback aligned with current live data
+- [x] Programs and Camps browser cache added to reduce visible fallback-to-live content swapping
 - [x] Camps section updated with three event-style cards
 - [x] Camps cards aligned to equal height
 - [x] Book / Apply buttons linked to #booking

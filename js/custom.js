@@ -8,6 +8,7 @@
 	var bookingRequestsEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec';
 	var scheduleEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=schedule';
 	var programsEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=programs';
+	var campsEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=camps';
 
 	
 	// Smooth scrolling using jQuery easing
@@ -659,6 +660,142 @@
 		});
 	}
 
+	function initCamps() {
+		var campsRow = document.querySelector('#camps .row');
+
+		if (!campsRow || typeof fetch !== 'function') {
+			return;
+		}
+
+		function normalizeCampText(value) {
+			return String(value || '').trim();
+		}
+
+		function getSortedCampItems(items) {
+			return items.slice().sort(function(firstItem, secondItem) {
+				var firstOrder = Number(firstItem.display_order);
+				var secondOrder = Number(secondItem.display_order);
+				firstOrder = isFinite(firstOrder) ? firstOrder : 999;
+				secondOrder = isFinite(secondOrder) ? secondOrder : 999;
+
+				return (firstOrder - secondOrder) ||
+					normalizeCampText(firstItem.title).localeCompare(normalizeCampText(secondItem.title));
+			});
+		}
+
+		function getCampIconClass(id) {
+			var iconMap = {
+				'summer-goalie-camp': 'fa fa-calendar-check-o',
+				'weekend-intensive': 'fa fa-bolt',
+				'preseason-goalie-intensive': 'fa fa-arrow-up'
+			};
+
+			return iconMap[normalizeCampText(id)] || 'fa fa-calendar-check-o';
+		}
+
+		function createCampField(label, value) {
+			var paragraph = document.createElement('p');
+			var strong = document.createElement('strong');
+
+			strong.textContent = label + ':';
+			paragraph.appendChild(strong);
+			paragraph.appendChild(document.createTextNode(' ' + value));
+
+			return paragraph;
+		}
+
+		function createCampCard(item) {
+			var column = document.createElement('div');
+			var card = document.createElement('div');
+			var iconWrapper = document.createElement('div');
+			var icon = document.createElement('i');
+			var title = document.createElement('h2');
+			var description = document.createElement('p');
+			var button = document.createElement('a');
+			var buttonText = document.createElement('span');
+			var trainingFormat = normalizeCampText(item.training_format) || normalizeCampText(item.title);
+
+			column.className = 'col-md-4';
+			card.className = 'services-inner-box';
+			iconWrapper.className = 'ser-icon';
+			icon.className = getCampIconClass(item.id);
+			button.className = 'sim-btn hvr-bounce-to-top';
+			button.href = '#contacts';
+			button.setAttribute('data-training-format', trainingFormat);
+
+			title.textContent = normalizeCampText(item.title);
+			description.textContent = normalizeCampText(item.description);
+			buttonText.textContent = normalizeCampText(item.button_text) || 'Book / Apply';
+
+			iconWrapper.appendChild(icon);
+			card.appendChild(iconWrapper);
+			card.appendChild(title);
+			if (normalizeCampText(item.date)) {
+				card.appendChild(createCampField('Date', normalizeCampText(item.date)));
+			}
+			if (normalizeCampText(item.time)) {
+				card.appendChild(createCampField('Time', normalizeCampText(item.time)));
+			}
+			if (normalizeCampText(item.location)) {
+				card.appendChild(createCampField('Location', normalizeCampText(item.location)));
+			}
+			if (normalizeCampText(item.age)) {
+				card.appendChild(createCampField('Age', normalizeCampText(item.age)));
+			}
+			card.appendChild(description);
+			if (normalizeCampText(item.price)) {
+				card.appendChild(createCampField('Price', normalizeCampText(item.price)));
+			}
+			if (normalizeCampText(item.status)) {
+				card.appendChild(createCampField('Status', normalizeCampText(item.status)));
+			}
+			button.appendChild(buttonText);
+			card.appendChild(button);
+			column.appendChild(card);
+
+			return column;
+		}
+
+		function renderLiveCamps(items) {
+			var fragment = document.createDocumentFragment();
+			var validItems = getSortedCampItems(items).filter(function(item) {
+				return normalizeCampText(item.title);
+			});
+
+			if (!validItems.length) {
+				return;
+			}
+
+			validItems.forEach(function(item) {
+				fragment.appendChild(createCampCard(item));
+			});
+
+			campsRow.innerHTML = '';
+			campsRow.appendChild(fragment);
+		}
+
+		fetch(campsEndpoint, {
+			cache: 'no-store'
+		})
+		.then(function(response) {
+			if (!response.ok) {
+				throw new Error('Camps request failed.');
+			}
+			return response.json();
+		})
+		.then(function(data) {
+			if (!data || data.ok !== true || !Array.isArray(data.items) || !data.items.length) {
+				throw new Error('Camps response was not valid.');
+			}
+			renderLiveCamps(data.items);
+		})
+		.catch(function(error) {
+			if (window.console && typeof window.console.warn === 'function') {
+				window.console.warn('Live camps could not be loaded. Using fallback camp cards.', error);
+			}
+		});
+	}
+
 	function initScheduleCalendar() {
 		var calendarGrid = document.getElementById('schedule-calendar-grid');
 		var monthLabel = document.getElementById('schedule-month-label');
@@ -1196,12 +1333,14 @@
 			initBookingTimePicker();
 			initBookingFormSubmission();
 			initPrograms();
+			initCamps();
 			initScheduleCalendar();
 		});
 	} else {
 		initBookingTimePicker();
 		initBookingFormSubmission();
 		initPrograms();
+		initCamps();
 		initScheduleCalendar();
 	}
 

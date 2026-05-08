@@ -9,6 +9,65 @@
 	var scheduleEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=schedule';
 	var programsEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=programs';
 	var campsEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=camps';
+	var liveDataCacheTtl = 6 * 60 * 60 * 1000;
+	var programsCacheKey = 'goalieAcademy.programs.v1';
+	var campsCacheKey = 'goalieAcademy.camps.v1';
+
+	function isValidLiveDataItems(items) {
+		return Array.isArray(items) && items.length > 0;
+	}
+
+	function readSessionCache(key) {
+		try {
+			var cached = window.sessionStorage.getItem(key);
+			var items = cached ? JSON.parse(cached) : null;
+
+			return isValidLiveDataItems(items) ? items : null;
+		} catch (error) {
+			return null;
+		}
+	}
+
+	function readLocalCache(key) {
+		try {
+			var cached = window.localStorage.getItem(key);
+			var payload = cached ? JSON.parse(cached) : null;
+			var savedAt = payload ? Number(payload.savedAt) : NaN;
+
+			if (!payload || !isFinite(savedAt) || Date.now() - savedAt > liveDataCacheTtl) {
+				return null;
+			}
+
+			return isValidLiveDataItems(payload.items) ? payload.items : null;
+		} catch (error) {
+			return null;
+		}
+	}
+
+	function readLiveDataCache(key) {
+		return readSessionCache(key) || readLocalCache(key);
+	}
+
+	function writeLiveDataCache(key, items) {
+		if (!isValidLiveDataItems(items)) {
+			return;
+		}
+
+		try {
+			window.sessionStorage.setItem(key, JSON.stringify(items));
+		} catch (error) {
+			// Ignore unavailable storage.
+		}
+
+		try {
+			window.localStorage.setItem(key, JSON.stringify({
+				savedAt: Date.now(),
+				items: items
+			}));
+		} catch (error) {
+			// Ignore unavailable storage.
+		}
+	}
 
 	
 	// Smooth scrolling using jQuery easing
@@ -638,6 +697,11 @@
 			programsRow.appendChild(fragment);
 		}
 
+		var cachedPrograms = readLiveDataCache(programsCacheKey);
+		if (cachedPrograms) {
+			renderLivePrograms(cachedPrograms);
+		}
+
 		fetch(programsEndpoint, {
 			cache: 'no-store'
 		})
@@ -652,6 +716,7 @@
 				throw new Error('Programs response was not valid.');
 			}
 			renderLivePrograms(data.items);
+			writeLiveDataCache(programsCacheKey, data.items);
 		})
 		.catch(function(error) {
 			if (window.console && typeof window.console.warn === 'function') {
@@ -774,6 +839,11 @@
 			campsRow.appendChild(fragment);
 		}
 
+		var cachedCamps = readLiveDataCache(campsCacheKey);
+		if (cachedCamps) {
+			renderLiveCamps(cachedCamps);
+		}
+
 		fetch(campsEndpoint, {
 			cache: 'no-store'
 		})
@@ -788,6 +858,7 @@
 				throw new Error('Camps response was not valid.');
 			}
 			renderLiveCamps(data.items);
+			writeLiveDataCache(campsCacheKey, data.items);
 		})
 		.catch(function(error) {
 			if (window.console && typeof window.console.warn === 'function') {

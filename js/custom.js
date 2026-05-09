@@ -81,6 +81,20 @@
 		return document.getElementById('booking-format');
 	}
 
+	function getBookingSubmitButtonText() {
+		var bookingFormat = getBookingFormatField();
+
+		return bookingFormat && bookingFormat.value === storeInquiryTrainingType ? 'Send Gear Inquiry' : 'Send Booking Request';
+	}
+
+	function syncBookingSubmitButtonText() {
+		var submitButton = document.getElementById('sendBookingButton');
+
+		if (submitButton && !submitButton.disabled) {
+			submitButton.textContent = getBookingSubmitButtonText();
+		}
+	}
+
 	function removeStoreInquiryOption(forceRemove) {
 		var bookingFormat = getBookingFormatField();
 		var storeOption = bookingFormat ? bookingFormat.querySelector('option[data-store-inquiry-option="true"]') : null;
@@ -142,6 +156,7 @@
 		if (preferredDate && $bookingDate.length) {
 		  $bookingDate.val(preferredDate).trigger('change');
 		}
+		syncBookingSubmitButtonText();
 	  });
 
 	  $(document).on('click', 'a[data-store-inquiry]', function() {
@@ -156,6 +171,7 @@
 		if (form) {
 		  form.setAttribute('data-inquiry-source', 'store');
 		}
+		syncBookingSubmitButtonText();
 		setTimeout(function() {
 		  var messageField = document.getElementById('booking-message');
 		  if (messageField) {
@@ -599,7 +615,7 @@
 
 		function setLoading(isLoading) {
 			submitButton.disabled = isLoading;
-			submitButton.textContent = isLoading ? 'Sending...' : 'Send Booking Request';
+			submitButton.textContent = isLoading ? 'Sending...' : getBookingSubmitButtonText();
 		}
 
 		function buildPayload() {
@@ -698,6 +714,7 @@
 						form.removeAttribute('data-inquiry-source');
 						removeStoreInquiryOption();
 					}
+					syncBookingSubmitButtonText();
 				});
 			}
 		}());
@@ -705,8 +722,11 @@
 			form.removeAttribute('data-inquiry-source');
 			setTimeout(function() {
 				removeStoreInquiryOption(true);
+				syncBookingSubmitButtonText();
 			}, 0);
 		});
+
+		syncBookingSubmitButtonText();
 	}
 
 	function initPrograms() {

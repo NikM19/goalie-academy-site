@@ -114,7 +114,7 @@ Live data flow:
 
 JavaScript cache busting:
 
-- `js/custom.js` is loaded with a version query, for example `js/custom.js?v=20260508-1`
+- `js/custom.js` is loaded with a version query, for example `js/custom.js?v=20260509-1`
 - When `js/custom.js` changes in the future, bump the version query in `index.html` so returning visitors receive the updated file
 
 ## Telegram booking CRM
@@ -188,7 +188,7 @@ Telegram CRM testing checklist:
 - [ ] Review and polish the Hero section on desktop and mobile
 - [x] Programs section updated with three training program cards
 - [x] Program card texts updated
-- [x] Book Training buttons linked to #booking
+- [x] Book Training buttons linked to #contacts
 - [x] Programs hover behavior fixed and tested
 - [x] Programs section checked on desktop and mobile
 - [x] Programs section redesigned with four compact offer-style program cards in one desktop row
@@ -202,7 +202,7 @@ Telegram CRM testing checklist:
 - [x] `js/custom.js` cache-busting version query added
 - [x] Camps section updated with three event-style cards
 - [x] Camps cards aligned to equal height
-- [x] Book / Apply buttons linked to #booking
+- [x] Book / Apply buttons linked to #contacts
 - [x] Camps card brand colors updated with dark hover fill, light readable hover text, and default card backing removed
 - [x] Camps section checked on desktop and mobile
 - [x] Camps connected to live Google Sheets data with static fallback cards retained
@@ -213,7 +213,7 @@ Telegram CRM testing checklist:
 - [x] Coach / Academy tabs updated with brand color capsule states
 - [x] Coach / Academy section updated with full-section local video background `videos/coach-academy-bg.mp4`, dark overlay, and glass-style content card
 - [x] Coach / Academy background video optimized for web use: same `videos/coach-academy-bg.mp4` path, H.264 MP4, audio removed, about 23 MB
-- [x] Buttons linked to #booking and #programs
+- [x] Buttons linked to #contacts and #programs
 - [x] Section checked on desktop and mobile
 - [x] Booking section updated with live training request form
 - [x] Form includes name, email, phone, age group, training format, Preferred date, Preferred time, and message fields
@@ -267,8 +267,8 @@ Telegram CRM testing checklist:
 - [x] Global script cleanup completed by removing missing `jquery.mobile.customized.min.js` import and fixing the RetinaJS browser export issue in `js/all.js`
 - [x] Legacy form script loading removed from `index.html` and old unused contact form block removed from `js/custom.js`; active Book Training form, Google Sheets submission, CTA prefill, and Preferred time picker remain active
 - [x] Footer redesigned with Goalie Academy square logo, two-column navigation, dark logo-matched background, copyright `All Rights Reserved. © 2026 Goalie Academy`, and design credit `Design By: M19`
-- [ ] Test Schedule and Contact on mobile
-- [ ] Replace placeholder contact links with real email, phone, WhatsApp, and Instagram links
+- [x] Schedule and Contact checked on mobile during final launch QA
+- [ ] Replace placeholder contact/social links with real email, phone, WhatsApp, and Instagram links before public launch
 - [x] Connect Schedule calendar to live Google Sheets data / dynamic sync
 - [ ] Optionally delete retained legacy files `js/contact_me.js` and `js/jqBootstrapValidation.js` after a final regression pass
 - [x] Add Telegram booking notification and admin status buttons

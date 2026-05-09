@@ -31,6 +31,7 @@ Create a fast, mobile-friendly landing page that presents Goalie Academy and col
 - Schedule / available slots
 - Cooperation
 - Reviews
+- Academy Store preview
 - Booking form
 - Contacts
 
@@ -102,6 +103,8 @@ Live data flow:
 - Programs and Camps refresh live data when the user returns to the browser tab, throttled to once every 5 minutes; failed/invalid/empty refreshes keep the current visible cards
 - Schedule is not refreshed by the Programs/Camps tab-return listener
 - Schedule does not use the Programs/Camps browser cache behavior
+- Academy Store is currently a static coming-soon preview section only; it has no JavaScript, cart, payments, checkout, Apps Script action, or live Google Sheets data connection
+- Academy Store CTA links to `#contacts`
 - Program and Camp CTA buttons keep using `data-training-format` so the booking Training format field is prefilled
 - Booking form submits to the same unified Google Apps Script Web App base URL through POST and saves to the `Bookings` sheet
 - Apps Script `doGet(e)` handles public Schedule, Programs, and Camps JSON
@@ -251,6 +254,7 @@ Telegram CRM testing checklist:
 - [x] Reviews section redesigned as calm testimonial cards
 - [x] Reviews accent colors updated to match Goalie Academy brand styling
 - [x] Programs and Reviews checked on desktop and mobile
+- [x] Academy Store static preview section added after Reviews and before Contact; CTA links to #contacts and no live Store data/shop functionality is active yet
 - [x] Contact section redesigned into one shared premium split-card layout
 - [x] Contact section includes Book Training form
 - [x] Contact section uses light premium form fields

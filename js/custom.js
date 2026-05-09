@@ -618,15 +618,65 @@
 			});
 		}
 
-		function createProgramDetail(label, value) {
+		function createProgramDetail(label, value, iconClass) {
 			var item = document.createElement('li');
+			var icon = document.createElement('i');
 			var strong = document.createElement('strong');
+			var text = document.createElement('span');
 
+			icon.className = iconClass;
+			icon.setAttribute('aria-hidden', 'true');
 			strong.textContent = label + ':';
-			item.appendChild(strong);
-			item.appendChild(document.createTextNode(' ' + value));
+			text.appendChild(strong);
+			text.appendChild(document.createTextNode(' ' + value));
+			item.appendChild(icon);
+			item.appendChild(text);
 
 			return item;
+		}
+
+		function getProgramIconName(item) {
+			var id = normalizeProgramText(item.id).toLowerCase();
+			var title = normalizeProgramText(item.title).toLowerCase();
+
+			if (id === 'individual-training' || title === 'individual training') {
+				return 'person-one';
+			}
+			if (id === 'mini-groups' || title === 'mini-groups') {
+				return 'people-two';
+			}
+			if (id === 'group-training' || title === 'group training') {
+				return 'people-three';
+			}
+			if (id === 'video-analysis' || title === 'video analysis') {
+				return 'video';
+			}
+
+			return 'people-three';
+		}
+
+		function createProgramHeaderIcon(item) {
+			var icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+			var iconName = getProgramIconName(item);
+			var iconPaths = {
+				'person-one': '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>',
+				'people-two': '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',
+				'people-three': '<path d="M192,120a59.91,59.91,0,0,1,48,24"></path><path d="M16,144a59.91,59.91,0,0,1,48-24"></path><circle cx="128" cy="144" r="40"></circle><path d="M72,216a65,65,0,0,1,112,0"></path><path d="M161,80a32,32,0,1,1,31,40"></path><path d="M64,120A32,32,0,1,1,95,80"></path>',
+				'video': '<path d="m16 13 5.223 3.482A.5.5 0 0 0 22 16.066V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path><rect x="2" y="6" width="14" height="12" rx="2"></rect>'
+			};
+
+			icon.classList.add('program-card-icon');
+			icon.setAttribute('aria-hidden', 'true');
+			icon.setAttribute('focusable', 'false');
+			icon.setAttribute('viewBox', iconName === 'people-three' ? '0 0 256 256' : '0 0 24 24');
+			icon.setAttribute('fill', 'none');
+			icon.setAttribute('stroke', 'currentColor');
+			icon.setAttribute('stroke-width', iconName === 'people-three' ? '16' : '2');
+			icon.setAttribute('stroke-linecap', 'round');
+			icon.setAttribute('stroke-linejoin', 'round');
+			icon.innerHTML = iconPaths[iconName] || iconPaths['people-three'];
+
+			return icon;
 		}
 
 		function createProgramCard(item) {
@@ -635,6 +685,7 @@
 			var header = document.createElement('div');
 			var label = document.createElement('span');
 			var title = document.createElement('h2');
+			var headerIcon = createProgramHeaderIcon(item);
 			var body = document.createElement('div');
 			var description = document.createElement('p');
 			var details = document.createElement('ul');
@@ -647,8 +698,9 @@
 			header.className = 'program-card-header';
 			label.className = 'program-card-label';
 			body.className = 'program-card-body';
+			description.className = 'program-card-description';
 			details.className = 'program-card-details';
-			button.className = 'sim-btn hvr-bounce-to-top';
+			button.className = 'program-card-cta sim-btn hvr-bounce-to-top';
 			button.href = '#contacts';
 			button.setAttribute('data-training-format', trainingFormat);
 
@@ -658,20 +710,21 @@
 			buttonText.textContent = normalizeProgramText(item.button_text) || 'Book Training';
 
 			if (normalizeProgramText(item.age)) {
-				details.appendChild(createProgramDetail('Age', normalizeProgramText(item.age)));
+				details.appendChild(createProgramDetail('Age', normalizeProgramText(item.age), 'fa fa-users'));
 			}
 			if (normalizeProgramText(item.duration)) {
-				details.appendChild(createProgramDetail('Duration', normalizeProgramText(item.duration)));
+				details.appendChild(createProgramDetail('Duration', normalizeProgramText(item.duration), 'fa fa-clock-o'));
 			}
 			if (normalizeProgramText(item.price)) {
-				details.appendChild(createProgramDetail('Price', normalizeProgramText(item.price)));
+				details.appendChild(createProgramDetail('Price', normalizeProgramText(item.price), 'fa fa-tag'));
 			}
 			if (normalizeProgramText(item.status)) {
-				details.appendChild(createProgramDetail('Status', normalizeProgramText(item.status)));
+				details.appendChild(createProgramDetail('Status', normalizeProgramText(item.status), 'fa fa-check-circle-o'));
 			}
 
 			header.appendChild(label);
 			header.appendChild(title);
+			header.appendChild(headerIcon);
 			button.appendChild(buttonText);
 			body.appendChild(description);
 			body.appendChild(details);

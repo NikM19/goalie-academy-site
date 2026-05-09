@@ -77,6 +77,7 @@ a.sim-btn.hvr-bounce-to-top:active {
 #camps .services-inner-box .sim-btn,
 #coach .message-box .sim-btn,
 #cooperation .cooperation-cta .sim-btn,
+#store .store-teaser .sim-btn,
 #schedule .schedule-date-fallback .sim-btn,
 #sendBookingButton {
 	background: transparent;
@@ -100,6 +101,9 @@ a.sim-btn.hvr-bounce-to-top:active {
 #cooperation .cooperation-cta .sim-btn:hover,
 #cooperation .cooperation-cta .sim-btn:focus,
 #cooperation .cooperation-cta .sim-btn:active,
+#store .store-teaser .sim-btn:hover,
+#store .store-teaser .sim-btn:focus,
+#store .store-teaser .sim-btn:active,
 #schedule .schedule-date-fallback .sim-btn:hover,
 #schedule .schedule-date-fallback .sim-btn:focus,
 #schedule .schedule-date-fallback .sim-btn:active,

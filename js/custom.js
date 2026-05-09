@@ -228,6 +228,30 @@
 		return '';
 	}
 
+	function initBookingDateValueState() {
+		var dateField = document.getElementById('booking-date');
+		var form = document.getElementById('bookingRequestForm');
+
+		if (!dateField) {
+			return;
+		}
+
+		function syncDateValueState() {
+			dateField.classList.toggle('has-value', !!dateField.value);
+		}
+
+		dateField.addEventListener('input', syncDateValueState);
+		dateField.addEventListener('change', syncDateValueState);
+
+		if (form) {
+			form.addEventListener('reset', function() {
+				setTimeout(syncDateValueState, 0);
+			});
+		}
+
+		syncDateValueState();
+	}
+
 	function initBookingTimePicker() {
 		var picker = document.querySelector('[data-time-picker]');
 		var trigger = document.getElementById('booking-time-trigger');
@@ -276,10 +300,15 @@
 			});
 		}
 
+		function syncTimeValueState() {
+			picker.classList.toggle('has-value', !!hiddenField.value.trim());
+		}
+
 		function syncTimeField() {
 			var value = selectedHour && selectedMinute ? selectedHour + ':' + selectedMinute : '';
 			timeField.value = value;
 			hiddenField.value = value;
+			syncTimeValueState();
 		}
 
 		function centerSelectedOption(wheel, value, shouldAnimate) {
@@ -358,6 +387,7 @@
 				selectedMinute = '';
 				hiddenField.value = '';
 				syncSelectedOptions();
+				syncTimeValueState();
 				return '';
 			}
 
@@ -366,6 +396,7 @@
 				selectedMinute = '';
 				hiddenField.value = '';
 				syncSelectedOptions();
+				syncTimeValueState();
 				return null;
 			}
 
@@ -373,6 +404,7 @@
 			selectedMinute = parsedTime.hasMinute ? parsedTime.minute : '';
 			hiddenField.value = selectedHour && selectedMinute ? selectedHour + ':' + selectedMinute : '';
 			syncSelectedOptions();
+			syncTimeValueState();
 			if (!popover.hidden && selectedHour) {
 				centerSelectedOption(hoursWheel, selectedHour, true);
 			}
@@ -398,6 +430,7 @@
 				selectedMinute = '';
 				hiddenField.value = '';
 				syncSelectedOptions();
+				syncTimeValueState();
 				return;
 			}
 			syncSelectionFromInput();
@@ -473,6 +506,7 @@
 					syncSelectedOptions();
 					timeField.value = '';
 					hiddenField.value = '';
+					syncTimeValueState();
 					closePicker();
 				}, 0);
 			});
@@ -1487,6 +1521,7 @@
 
 	if (document.readyState === 'loading') {
 		document.addEventListener('DOMContentLoaded', function() {
+			initBookingDateValueState();
 			initBookingTimePicker();
 			initBookingFormSubmission();
 			initPrograms();
@@ -1495,6 +1530,7 @@
 			initScheduleCalendar();
 		});
 	} else {
+		initBookingDateValueState();
 		initBookingTimePicker();
 		initBookingFormSubmission();
 		initPrograms();

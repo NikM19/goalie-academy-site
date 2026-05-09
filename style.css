@@ -3210,6 +3210,18 @@ select.mobile-device {
 	box-shadow: 0 0 0 3px rgba(222,19,22,0.12) !important;
 }
 
+#contacts .contact_form #booking-date::-webkit-calendar-picker-indicator{
+	cursor: pointer;
+	filter: grayscale(1) brightness(0.35);
+	opacity: 0.85;
+	transition: filter 0.3s ease-in-out 0s, opacity 0.3s ease-in-out 0s;
+}
+
+#contacts .contact_form #booking-date.has-value::-webkit-calendar-picker-indicator{
+	filter: brightness(0) saturate(100%) invert(14%) sepia(95%) saturate(4919%) hue-rotate(352deg) brightness(90%) contrast(98%);
+	opacity: 1;
+}
+
 #contacts .contact_form select.form-control{
 	height: 56px;
 	min-height: 56px;
@@ -3269,7 +3281,7 @@ select.mobile-device {
 	align-items: center;
 	background: transparent;
 	border: 0;
-	color: #de1316;
+	color: #333333;
 	cursor: pointer;
 	display: flex;
 	flex: 0 0 48px;
@@ -3279,8 +3291,9 @@ select.mobile-device {
 	padding: 0;
 }
 
-#contacts .booking-time-trigger:focus,
-#contacts .booking-time-trigger[aria-expanded="true"]{
+#contacts .booking-time-picker.has-value .booking-time-trigger,
+#contacts .booking-time-picker.has-value .booking-time-trigger:focus,
+#contacts .booking-time-picker.has-value .booking-time-trigger[aria-expanded="true"]{
 	color: #de1316;
 }
 

@@ -9,12 +9,15 @@
 	var scheduleEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=schedule';
 	var programsEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=programs';
 	var campsEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=camps';
+	var storeEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=store';
 	var liveDataCacheTtl = 6 * 60 * 60 * 1000;
 	var liveDataFocusRefreshInterval = 5 * 60 * 1000;
 	var programsCacheKey = 'goalieAcademy.programs.v1';
 	var campsCacheKey = 'goalieAcademy.camps.v1';
+	var storeCacheKey = 'goalieAcademy.store.v1';
 	var refreshProgramsLiveData = null;
 	var refreshCampsLiveData = null;
+	var refreshStoreLiveData = null;
 	var lastLiveDataFocusRefreshAt = 0;
 
 	function isValidLiveDataItems(items) {
@@ -968,6 +971,125 @@
 		fetchLiveCamps();
 	}
 
+	function initStore() {
+		var storeSection = document.getElementById('store');
+		var teaser = storeSection ? storeSection.querySelector('.store-teaser') : null;
+		var status = teaser ? teaser.querySelector('.store-teaser-status') : null;
+		var headline = teaser ? teaser.querySelector('h2') : null;
+		var description = teaser ? teaser.querySelector('p') : null;
+		var categories = teaser ? teaser.querySelector('.store-teaser-categories') : null;
+		var buttonText = teaser ? teaser.querySelector('.sim-btn span') : null;
+
+		if (!storeSection || !teaser || !status || !headline || !description || !categories || !buttonText || typeof fetch !== 'function') {
+			return;
+		}
+
+		function normalizeStoreText(value) {
+			return String(value || '').trim();
+		}
+
+		function getSortedStoreItems(items) {
+			return items.slice().sort(function(firstItem, secondItem) {
+				var firstOrder = Number(firstItem.display_order);
+				var secondOrder = Number(secondItem.display_order);
+				firstOrder = isFinite(firstOrder) ? firstOrder : 999;
+				secondOrder = isFinite(secondOrder) ? secondOrder : 999;
+
+				return (firstOrder - secondOrder) ||
+					normalizeStoreText(firstItem.title).localeCompare(normalizeStoreText(secondItem.title));
+			});
+		}
+
+		function createStoreCategoryChip(item) {
+			var chip = document.createElement('span');
+			var title = normalizeStoreText(item.title);
+			var details = [
+				normalizeStoreText(item.category),
+				normalizeStoreText(item.price_label),
+				normalizeStoreText(item.status)
+			].filter(function(detail, index, detailItems) {
+				return detail && detailItems.indexOf(detail) === index;
+			});
+
+			chip.textContent = title;
+			if (normalizeStoreText(item.id)) {
+				chip.setAttribute('data-store-item-id', normalizeStoreText(item.id));
+			}
+			if (normalizeStoreText(item.inquiry_type)) {
+				chip.setAttribute('data-inquiry-type', normalizeStoreText(item.inquiry_type));
+			}
+			if (details.length) {
+				chip.setAttribute('title', details.join(' / '));
+			}
+
+			return chip;
+		}
+
+		function renderLiveStore(items) {
+			var validItems = getSortedStoreItems(items).filter(function(item) {
+				return normalizeStoreText(item.title);
+			});
+			var primaryItem;
+			var primaryStatus;
+			var primaryDescription;
+			var primaryButtonText;
+			var fragment;
+
+			if (!validItems.length) {
+				return;
+			}
+
+			primaryItem = validItems[0];
+			primaryStatus = normalizeStoreText(primaryItem.status);
+			primaryDescription = normalizeStoreText(primaryItem.description);
+			primaryButtonText = normalizeStoreText(primaryItem.button_text);
+			fragment = document.createDocumentFragment();
+
+			validItems.forEach(function(item) {
+				fragment.appendChild(createStoreCategoryChip(item));
+			});
+
+			status.textContent = primaryStatus || 'Coming soon';
+			headline.textContent = 'Gear for training days, camps and hockey life.';
+			description.textContent = primaryDescription || 'Branded apparel, goalie essentials and Academy items are planned for future release.';
+			categories.innerHTML = '';
+			categories.appendChild(fragment);
+			buttonText.textContent = primaryButtonText || 'Ask About Gear';
+		}
+
+		var cachedStoreItems = readLiveDataCache(storeCacheKey);
+		if (cachedStoreItems) {
+			renderLiveStore(cachedStoreItems);
+		}
+
+		function fetchLiveStore() {
+			fetch(storeEndpoint, {
+				cache: 'no-store'
+			})
+			.then(function(response) {
+				if (!response.ok) {
+					throw new Error('Store request failed.');
+				}
+				return response.json();
+			})
+			.then(function(data) {
+				if (!data || data.ok !== true || !Array.isArray(data.items) || !data.items.length) {
+					throw new Error('Store response was not valid.');
+				}
+				renderLiveStore(data.items);
+				writeLiveDataCache(storeCacheKey, data.items);
+			})
+			.catch(function(error) {
+				if (window.console && typeof window.console.warn === 'function') {
+					window.console.warn('Live store could not be loaded. Using fallback store preview.', error);
+				}
+			});
+		}
+
+		refreshStoreLiveData = fetchLiveStore;
+		fetchLiveStore();
+	}
+
 	function initLiveDataFocusRefresh() {
 		document.addEventListener('visibilitychange', function() {
 			var now = Date.now();
@@ -983,6 +1105,9 @@
 			}
 			if (typeof refreshCampsLiveData === 'function') {
 				refreshCampsLiveData();
+			}
+			if (typeof refreshStoreLiveData === 'function') {
+				refreshStoreLiveData();
 			}
 		});
 	}
@@ -1526,6 +1651,7 @@
 			initBookingFormSubmission();
 			initPrograms();
 			initCamps();
+			initStore();
 			initLiveDataFocusRefresh();
 			initScheduleCalendar();
 		});
@@ -1535,6 +1661,7 @@
 		initBookingFormSubmission();
 		initPrograms();
 		initCamps();
+		initStore();
 		initLiveDataFocusRefresh();
 		initScheduleCalendar();
 	}

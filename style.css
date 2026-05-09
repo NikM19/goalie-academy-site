@@ -1140,11 +1140,51 @@ xclip
 	max-width: 680px;
 }
 
+#store .store-teaser-note{
+	align-items: center;
+	border-left: 1px solid rgba(116,150,170,0.28);
+	color: #7b858d;
+	display: inline-flex;
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 1.2;
+	margin: 0;
+	min-height: 34px;
+	padding-left: 10px;
+	transform: translateY(10px);
+}
+
+#store .store-teaser-actions{
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	justify-content: flex-start;
+	margin-top: 2px;
+	text-align: left;
+}
+
+#store .store-teaser-actions .sim-btn{
+	align-items: center;
+	background: transparent !important;
+	border-color: transparent !important;
+	display: inline-flex;
+	line-height: 1.2;
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+}
+
+#store .store-teaser-actions .sim-btn:hover,
+#store .store-teaser-actions .sim-btn:focus,
+#store .store-teaser-actions .sim-btn:active{
+	border-color: #de1316 !important;
+}
+
 #store .store-teaser-categories{
 	display: flex;
 	flex-wrap: wrap;
 	gap: 10px;
-	margin-bottom: 24px;
+	margin-bottom: 0;
 }
 
 #store .store-teaser-categories span{
@@ -1158,18 +1198,16 @@ xclip
 	padding: 8px 12px;
 }
 
+#store .store-teaser-mark .store-teaser-categories{
+	justify-content: flex-end;
+}
+
 #store .store-teaser-mark{
 	align-items: center;
-	background: rgba(222,19,22,0.08);
-	border: 1px solid rgba(222,19,22,0.16);
-	border-radius: 50%;
-	color: rgba(222,19,22,0.72);
 	display: flex;
-	font-size: 58px;
-	height: 132px;
 	justify-content: center;
 	justify-self: end;
-	width: 132px;
+	min-width: 190px;
 }
 
 @media only screen and (max-width: 767px){
@@ -1186,11 +1224,27 @@ xclip
 		font-size: 24px;
 	}
 
+	#store .store-teaser-actions{
+		align-items: center;
+		gap: 10px;
+	}
+
+	#store .store-teaser-actions .sim-btn{
+		margin-left: 0 !important;
+	}
+
+	#store .store-teaser-note{
+		margin-top: 0;
+	}
+
 	#store .store-teaser-mark{
-		height: 90px;
 		justify-self: start;
-		font-size: 40px;
-		width: 90px;
+		justify-content: flex-start;
+		min-width: 0;
+	}
+
+	#store .store-teaser-mark .store-teaser-categories{
+		justify-content: flex-start;
 	}
 }
 

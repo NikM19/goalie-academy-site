@@ -19,6 +19,7 @@
 	var refreshCampsLiveData = null;
 	var refreshStoreLiveData = null;
 	var lastLiveDataFocusRefreshAt = 0;
+	var storeInquiryTrainingType = 'Ask About Gear';
 
 	function isValidLiveDataItems(items) {
 		return Array.isArray(items) && items.length > 0;
@@ -76,6 +77,39 @@
 		}
 	}
 
+	function getBookingFormatField() {
+		return document.getElementById('booking-format');
+	}
+
+	function removeStoreInquiryOption(forceRemove) {
+		var bookingFormat = getBookingFormatField();
+		var storeOption = bookingFormat ? bookingFormat.querySelector('option[data-store-inquiry-option="true"]') : null;
+
+		if (storeOption && (forceRemove || bookingFormat.value !== storeInquiryTrainingType)) {
+			storeOption.parentNode.removeChild(storeOption);
+		}
+	}
+
+	function ensureStoreInquiryOption() {
+		var bookingFormat = getBookingFormatField();
+		var storeOption;
+
+		if (!bookingFormat) {
+			return null;
+		}
+
+		storeOption = bookingFormat.querySelector('option[data-store-inquiry-option="true"]');
+		if (!storeOption) {
+			storeOption = document.createElement('option');
+			storeOption.value = storeInquiryTrainingType;
+			storeOption.textContent = storeInquiryTrainingType;
+			storeOption.setAttribute('data-store-inquiry-option', 'true');
+			bookingFormat.appendChild(storeOption);
+		}
+
+		return storeOption;
+	}
+
 	
 	// Smooth scrolling using jQuery easing
 	  $('a.js-scroll-trigger[href*="#"]:not([href="#"])').click(function() {
@@ -97,12 +131,37 @@
 		var preferredDate = $(this).data('preferred-date');
 		var $bookingFormat = $('#booking-format');
 		var $bookingDate = $('#booking-date');
+		var form = document.getElementById('bookingRequestForm');
+		removeStoreInquiryOption(true);
+		if (form) {
+			form.removeAttribute('data-inquiry-source');
+		}
 		if (trainingFormat && $bookingFormat.length) {
 		  $bookingFormat.val(trainingFormat).trigger('change');
 		}
 		if (preferredDate && $bookingDate.length) {
 		  $bookingDate.val(preferredDate).trigger('change');
 		}
+	  });
+
+	  $(document).on('click', 'a[data-store-inquiry]', function() {
+		var bookingFormat = getBookingFormatField();
+		var form = document.getElementById('bookingRequestForm');
+
+		ensureStoreInquiryOption();
+		if (bookingFormat) {
+		  bookingFormat.value = storeInquiryTrainingType;
+		  $(bookingFormat).trigger('change');
+		}
+		if (form) {
+		  form.setAttribute('data-inquiry-source', 'store');
+		}
+		setTimeout(function() {
+		  var messageField = document.getElementById('booking-message');
+		  if (messageField) {
+			messageField.focus();
+		  }
+		}, 600);
 	  });
 	
 	var bookingTimeHours = ['07','08','09','10','11','12','13','14','15','16','17','18','19','20','21'];
@@ -563,7 +622,7 @@
 				training_type: getFieldValue('booking-format'),
 				preferred_time: preferredTime === null ? (preferredTimeInput ? preferredTimeInput.value.trim() : getFieldValue('booking-time')) : preferredTime,
 				message: getFieldValue('booking-message'),
-				source: 'website'
+				source: form.getAttribute('data-inquiry-source') === 'store' ? 'store' : 'website'
 			};
 		}
 
@@ -629,6 +688,24 @@
 		form.addEventListener('submit', function(event) {
 			event.preventDefault();
 			submitBookingRequest();
+		});
+		(function() {
+			var bookingFormat = getBookingFormatField();
+
+			if (bookingFormat) {
+				bookingFormat.addEventListener('change', function() {
+					if (bookingFormat.value !== storeInquiryTrainingType) {
+						form.removeAttribute('data-inquiry-source');
+						removeStoreInquiryOption();
+					}
+				});
+			}
+		}());
+		form.addEventListener('reset', function() {
+			form.removeAttribute('data-inquiry-source');
+			setTimeout(function() {
+				removeStoreInquiryOption(true);
+			}, 0);
 		});
 	}
 
@@ -979,6 +1056,7 @@
 		var description = teaser ? teaser.querySelector('p') : null;
 		var categories = teaser ? teaser.querySelector('.store-teaser-categories') : null;
 		var buttonText = teaser ? teaser.querySelector('.sim-btn span') : null;
+		var note = teaser ? teaser.querySelector('.store-teaser-note') : null;
 
 		if (!storeSection || !teaser || !status || !headline || !description || !categories || !buttonText || typeof fetch !== 'function') {
 			return;
@@ -1031,7 +1109,6 @@
 			});
 			var primaryItem;
 			var primaryStatus;
-			var primaryDescription;
 			var primaryButtonText;
 			var fragment;
 
@@ -1041,7 +1118,6 @@
 
 			primaryItem = validItems[0];
 			primaryStatus = normalizeStoreText(primaryItem.status);
-			primaryDescription = normalizeStoreText(primaryItem.description);
 			primaryButtonText = normalizeStoreText(primaryItem.button_text);
 			fragment = document.createDocumentFragment();
 
@@ -1050,11 +1126,14 @@
 			});
 
 			status.textContent = primaryStatus || 'Coming soon';
-			headline.textContent = 'Gear for training days, camps and hockey life.';
-			description.textContent = primaryDescription || 'Branded apparel, goalie essentials and Academy items are planned for future release.';
+			headline.textContent = 'Academy gear is coming soon.';
+			description.textContent = 'We\u2019re preparing training apparel, goalie essentials and branded items for players, families and hockey days.';
 			categories.innerHTML = '';
 			categories.appendChild(fragment);
 			buttonText.textContent = primaryButtonText || 'Ask About Gear';
+			if (note) {
+				note.textContent = 'Tell us what you\u2019d like to see first.';
+			}
 		}
 
 		var cachedStoreItems = readLiveDataCache(storeCacheKey);

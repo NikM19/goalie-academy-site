@@ -79,6 +79,12 @@ a.sim-btn.hvr-bounce-to-top:active {
 	color: #ffffff;
 }
 
+@media (hover: none), (pointer: coarse) {
+	#camps .services-inner-box:hover .sim-btn {
+		color: #333333;
+	}
+}
+
 #contacts #bookingRequestForm .form-control:focus {
 	border-color: #de1316;
 	outline: none;

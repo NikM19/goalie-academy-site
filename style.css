@@ -797,7 +797,6 @@ xclip
 	width: 100%;
 }
 
-#programs .program-card:hover,
 #programs .program-card:focus-within{
 	border-color: rgba(222,19,22,0.22);
 	box-shadow: 0 12px 30px rgba(222,19,22,0.22);
@@ -834,7 +833,6 @@ xclip
 	z-index: 0;
 }
 
-#programs .program-card:hover .program-card-header::before,
 #programs .program-card:focus-within .program-card-header::before{
 	-webkit-transform: scaleY(1);
 	transform: scaleY(1);
@@ -872,6 +870,7 @@ xclip
 	font-weight: 600;
 	line-height: 1.25;
 	margin: 0;
+	padding-right: 44px;
 	position: relative;
 	z-index: 2;
 }
@@ -888,7 +887,6 @@ xclip
 	z-index: 2;
 }
 
-#programs .program-card:hover .program-card-icon,
 #programs .program-card:focus-within .program-card-icon{
 	color: #ffffff;
 }
@@ -935,7 +933,6 @@ xclip
 	transition: color 0.3s ease-in-out 0s;
 }
 
-#programs .program-card:hover .program-card-details i,
 #programs .program-card:focus-within .program-card-details i{
 	color: #de1316;
 }
@@ -969,6 +966,29 @@ xclip
 
 #programs .program-card .program-card-cta::before{
 	background: #de1316;
+}
+
+@media (hover: hover) and (pointer: fine){
+	#programs .program-card:hover{
+		border-color: rgba(222,19,22,0.22);
+		box-shadow: 0 12px 30px rgba(222,19,22,0.22);
+		transform: translateY(-3px);
+	}
+
+	#programs .program-card:hover .program-card-header::before{
+		-webkit-transform: scaleY(1);
+		transform: scaleY(1);
+		-webkit-transition-timing-function: cubic-bezier(0.52, 1.64, 0.37, 0.66);
+		transition-timing-function: cubic-bezier(0.52, 1.64, 0.37, 0.66);
+	}
+
+	#programs .program-card:hover .program-card-icon{
+		color: #ffffff;
+	}
+
+	#programs .program-card:hover .program-card-details i{
+		color: #de1316;
+	}
 }
 
 #reviews .testimonial-card{
@@ -1089,6 +1109,23 @@ xclip
 #camps .services-inner-box:hover p strong,
 #camps .services-inner-box:hover .ser-icon i{
 	color: #ffffff;
+}
+
+@media (hover: none), (pointer: coarse){
+	#camps .services-inner-box:hover::after{
+		height: 0;
+		width: 0;
+	}
+
+	#camps .services-inner-box:hover h2,
+	#camps .services-inner-box:hover p{
+		color: inherit;
+	}
+
+	#camps .services-inner-box:hover p strong,
+	#camps .services-inner-box:hover .ser-icon i{
+		color: #333333;
+	}
 }
 
 #cooperation .cooperation-actions{

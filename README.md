@@ -64,11 +64,20 @@ Sheets:
 - Reviews
 - Settings
 - Bookings
+- StoreInquiries
 - EmailQueue
 
 Bookings columns:
 
 `timestamp | name | goalie_age | training_type | preferred_date | preferred_time | phone | email | message | source | status | notes | booking_id`
+
+StoreInquiries columns:
+
+`timestamp | inquiry_id | name | email | phone | goalie_age | request_type | message | source | status | notes`
+
+StoreInquiries status values:
+
+`new | contacted | interested | not_interested | closed`
 
 Programs columns:
 
@@ -113,7 +122,11 @@ Live data flow:
 - Schedule does not use the Programs/Camps browser cache behavior
 - Academy Store remains a preview/interest section; CTA links to `#contacts` only and there is no cart, payment, checkout, or Buy Now flow
 - Program and Camp CTA buttons keep using `data-training-format` so the booking Training format field is prefilled
-- Booking form submits to the same unified Google Apps Script Web App base URL through POST and saves to the `Bookings` sheet
+- Booking form submits to the same unified Google Apps Script Web App base URL through POST
+- Normal training bookings save to the `Bookings` sheet
+- Store / gear inquiries from `Ask About Gear` save to the `StoreInquiries` sheet and do not create `Bookings` rows
+- `Ask About Gear` is a temporary Store inquiry form value, not a normal Training format dropdown option
+- Store inquiry mode changes the submit button to `Send Gear Inquiry` and uses gear inquiry success wording
 - Apps Script `doGet(e)` handles public Schedule, Programs, Camps, and Store JSON
 - Apps Script `doPost(e)` handles booking submissions, adds `status = new`, leaves `notes` empty, and generates `booking_id`
 - Booking status can then be changed manually in Google Sheets
@@ -130,6 +143,7 @@ JavaScript cache busting:
 ## Telegram booking CRM
 
 - Apps Script sends a Telegram notification after each booking row is appended to the `Bookings` sheet
+- Store / gear inquiries use a separate Telegram notification flow from normal booking notifications
 - New booking rows receive `status = new`, empty `notes`, and a server-generated `booking_id`
 - Telegram notification buttons update Google Sheets status by `booking_id`: Contacted -> `contacted`, Confirmed -> `confirmed`, Cancelled -> `cancelled`
 - Contacted queues the info email, Confirmed queues the confirmation email, and Cancelled queues the cancellation email

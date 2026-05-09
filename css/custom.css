@@ -74,6 +74,42 @@ a.sim-btn.hvr-bounce-to-top:active {
 	color: #ffffff;
 }
 
+#camps .services-inner-box .sim-btn,
+#coach .message-box .sim-btn,
+#cooperation .cooperation-cta .sim-btn,
+#schedule .schedule-date-fallback .sim-btn,
+#sendBookingButton {
+	background: transparent;
+	border: 1px solid #333333;
+	border-radius: 999px;
+	color: #333333;
+	font-weight: 600;
+	min-width: 142px;
+	padding: 10px 18px;
+	position: relative;
+	white-space: nowrap;
+	z-index: 1;
+}
+
+#camps .services-inner-box .sim-btn:hover,
+#camps .services-inner-box .sim-btn:focus,
+#camps .services-inner-box .sim-btn:active,
+#coach .message-box .sim-btn:hover,
+#coach .message-box .sim-btn:focus,
+#coach .message-box .sim-btn:active,
+#cooperation .cooperation-cta .sim-btn:hover,
+#cooperation .cooperation-cta .sim-btn:focus,
+#cooperation .cooperation-cta .sim-btn:active,
+#schedule .schedule-date-fallback .sim-btn:hover,
+#schedule .schedule-date-fallback .sim-btn:focus,
+#schedule .schedule-date-fallback .sim-btn:active,
+#sendBookingButton:hover,
+#sendBookingButton:focus,
+#sendBookingButton:active {
+	border-color: #de1316;
+	color: #ffffff;
+}
+
 #camps .services-inner-box:hover .sim-btn,
 #camps .services-inner-box:focus-within .sim-btn {
 	color: #ffffff;

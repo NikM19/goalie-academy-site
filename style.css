@@ -3344,7 +3344,7 @@ select.mobile-device {
 }
 
 #contacts {
-    background: url(images/1.jpg) no-repeat center center #ffffff;
+    background: #f8fafc;
 }
 
 #contacts .contact-split-card{

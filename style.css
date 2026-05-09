@@ -3680,13 +3680,26 @@ select.mobile-device {
 	font-weight: 600;
 	line-height: 1.5;
 	margin: 0 0 22px;
+	opacity: 0;
 	padding: 12px 14px;
 	text-align: center;
+	transform: translateY(6px);
+	transition: opacity 220ms ease, transform 220ms ease;
 }
 
 .booking-form-status.is-success,
 .booking-form-status.is-error{
 	display: block;
+}
+
+.booking-form-status.is-visible{
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.booking-form-status.is-hiding{
+	opacity: 0;
+	transform: translateY(-4px);
 }
 
 .booking-form-status.is-success{

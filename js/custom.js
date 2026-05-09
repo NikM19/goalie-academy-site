@@ -20,6 +20,8 @@
 	var refreshStoreLiveData = null;
 	var lastLiveDataFocusRefreshAt = 0;
 	var storeInquiryTrainingType = 'Ask About Gear';
+	var bookingSuccessAutoHideDelay = 5000;
+	var bookingSuccessHideAnimationDelay = 260;
 
 	function isValidLiveDataItems(items) {
 		return Array.isArray(items) && items.length > 0;
@@ -600,17 +602,60 @@
 			return;
 		}
 
+		var statusHideTimer = null;
+		var statusClearTimer = null;
+
 		function getFieldValue(id) {
 			var field = document.getElementById(id);
 			return field ? field.value.trim() : '';
 		}
 
-		function setStatus(message, type) {
+		function clearStatusTimers() {
+			if (statusHideTimer) {
+				window.clearTimeout(statusHideTimer);
+				statusHideTimer = null;
+			}
+			if (statusClearTimer) {
+				window.clearTimeout(statusClearTimer);
+				statusClearTimer = null;
+			}
+		}
+
+		function hideSuccessStatus() {
+			if (!status.classList.contains('is-success')) {
+				return;
+			}
+
+			status.classList.add('is-hiding');
+			status.classList.remove('is-visible');
+			statusClearTimer = window.setTimeout(function() {
+				if (status.classList.contains('is-success')) {
+					setStatus('', '');
+				}
+			}, bookingSuccessHideAnimationDelay);
+		}
+
+		function setStatus(message, type, autoHide) {
+			clearStatusTimers();
 			status.textContent = message;
 			status.className = 'booking-form-status';
 			if (type) {
 				status.className += ' is-' + type;
+				window.requestAnimationFrame(function() {
+					status.classList.add('is-visible');
+				});
 			}
+			if (autoHide && type === 'success') {
+				statusHideTimer = window.setTimeout(hideSuccessStatus, bookingSuccessAutoHideDelay);
+			}
+		}
+
+		function getSuccessMessage(payload) {
+			if (payload.training_type === storeInquiryTrainingType) {
+				return 'Thank you! Your gear inquiry has been sent. We\u2019ll get back to you soon.';
+			}
+
+			return 'Thank you! Your booking request has been sent.';
 		}
 
 		function setLoading(isLoading) {
@@ -689,7 +734,7 @@
 				return response.text();
 			})
 			.then(function() {
-				setStatus('Thank you! Your booking request has been sent.', 'success');
+				setStatus(getSuccessMessage(payload), 'success', true);
 				form.reset();
 			})
 			.catch(function() {

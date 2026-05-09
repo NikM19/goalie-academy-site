@@ -60,6 +60,7 @@ Sheets:
 - Programs
 - Camps
 - Schedule
+- Store
 - Reviews
 - Settings
 - Bookings
@@ -85,6 +86,10 @@ Schedule columns:
 
 `id | title | date | time | type | age | location | status | training_format | description | is_active | display_order`
 
+Store columns:
+
+`id | title | category | description | price_label | status | image | button_text | inquiry_type | is_active | display_order | notes`
+
 Schedule date rules:
 
 - Empty `date` = by-request / general availability item
@@ -96,18 +101,20 @@ Live data flow:
 - Schedule reads public live JSON from Google Apps Script GET endpoint with `?action=schedule`
 - Programs reads public live JSON from Google Apps Script GET endpoint with `?action=programs`
 - Camps reads public live JSON from Google Apps Script GET endpoint with `?action=camps`
+- Academy Store reads public live JSON from Google Apps Script GET endpoint with `?action=store`
 - Programs and Camps keep static HTML cards as fallback
 - Live Programs and Camps cards replace fallback only after valid non-empty responses
-- Programs and Camps use browser cache for faster initial rendering: `sessionStorage` first, `localStorage` second with a 6-hour TTL, and static HTML fallback last
-- Programs and Camps still run a fresh live fetch on every page load; valid non-empty responses refresh the rendered cards and browser cache, while failed/invalid/empty responses keep the current visible cards
-- Programs and Camps refresh live data when the user returns to the browser tab, throttled to once every 5 minutes; failed/invalid/empty refreshes keep the current visible cards
+- Academy Store keeps static HTML content as fallback and only updates after valid non-empty Store responses
+- Programs, Camps, and Store use browser cache for faster initial rendering: `sessionStorage` first, `localStorage` second with a 6-hour TTL, and static HTML fallback last
+- Store cache key: `goalieAcademy.store.v1`
+- Programs, Camps, and Store still run a fresh live fetch on every page load; valid non-empty responses refresh rendered content and browser cache, while failed/invalid/empty responses keep the current visible content
+- Programs, Camps, and Store refresh live data when the user returns to the browser tab, throttled to once every 5 minutes; failed/invalid/empty refreshes keep the current visible content
 - Schedule is not refreshed by the Programs/Camps tab-return listener
 - Schedule does not use the Programs/Camps browser cache behavior
-- Academy Store is currently a static coming-soon preview section only; it has no JavaScript, cart, payments, checkout, Apps Script action, or live Google Sheets data connection
-- Academy Store CTA links to `#contacts`
+- Academy Store remains a preview/interest section; CTA links to `#contacts` only and there is no cart, payment, checkout, or Buy Now flow
 - Program and Camp CTA buttons keep using `data-training-format` so the booking Training format field is prefilled
 - Booking form submits to the same unified Google Apps Script Web App base URL through POST and saves to the `Bookings` sheet
-- Apps Script `doGet(e)` handles public Schedule, Programs, and Camps JSON
+- Apps Script `doGet(e)` handles public Schedule, Programs, Camps, and Store JSON
 - Apps Script `doPost(e)` handles booking submissions, adds `status = new`, leaves `notes` empty, and generates `booking_id`
 - Booking status can then be changed manually in Google Sheets
 - After a successful live Schedule fetch, fallback/request option cards use only active live Schedule items; inactive Google Sheets rows stay hidden from the option list
@@ -254,7 +261,8 @@ Telegram CRM testing checklist:
 - [x] Reviews section redesigned as calm testimonial cards
 - [x] Reviews accent colors updated to match Goalie Academy brand styling
 - [x] Programs and Reviews checked on desktop and mobile
-- [x] Academy Store static preview section added after Reviews and before Contact; CTA links to #contacts and no live Store data/shop functionality is active yet
+- [x] Academy Store preview section added after Reviews and before Contact
+- [x] Academy Store connected to live Google Sheets data with static fallback, `goalieAcademy.store.v1` cache, and tab-return refresh; CTA still links to #contacts only
 - [x] Contact section redesigned into one shared premium split-card layout
 - [x] Contact section includes Book Training form
 - [x] Contact section uses light premium form fields

@@ -6,6 +6,7 @@
     "use strict";
 
 	var bookingRequestsEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec';
+	var workerBookingEndpoint = 'https://goalie-academy-crm-bot.musatovnikita13.workers.dev/api/booking';
 	var scheduleEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=schedule';
 	var programsEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=programs';
 	var campsEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=camps';
@@ -604,6 +605,7 @@
 
 		var statusHideTimer = null;
 		var statusClearTimer = null;
+		var isSubmitting = false;
 
 		function getFieldValue(id) {
 			var field = document.getElementById(id);
@@ -711,7 +713,19 @@
 			return body;
 		}
 
+		function isStoreInquiryPayload(payload) {
+			return payload.source === 'store' || payload.training_type === storeInquiryTrainingType || form.getAttribute('data-inquiry-source') === 'store';
+		}
+
+		function getBookingSubmitEndpoint(payload) {
+			return isStoreInquiryPayload(payload) ? bookingRequestsEndpoint : workerBookingEndpoint;
+		}
+
 		function submitBookingRequest() {
+			if (isSubmitting) {
+				return;
+			}
+
 			var payload = buildPayload();
 			var validationError = validatePayload(payload);
 
@@ -720,10 +734,11 @@
 				return;
 			}
 
+			isSubmitting = true;
 			setLoading(true);
 			setStatus('', '');
 
-			fetch(bookingRequestsEndpoint, {
+			fetch(getBookingSubmitEndpoint(payload), {
 				method: 'POST',
 				body: encodePayload(payload)
 			})
@@ -741,6 +756,7 @@
 				setStatus('Sorry, something went wrong. Please try again or contact us directly.', 'error');
 			})
 			.finally(function() {
+				isSubmitting = false;
 				setLoading(false);
 			});
 		}

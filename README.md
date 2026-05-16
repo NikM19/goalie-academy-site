@@ -122,27 +122,93 @@ Live data flow:
 - Schedule does not use the Programs/Camps browser cache behavior
 - Academy Store remains a preview/interest section; CTA links to `#contacts` only and there is no cart, payment, checkout, or Buy Now flow
 - Program and Camp CTA buttons keep using `data-training-format` so the booking Training format field is prefilled
-- Booking form submits to the same unified Google Apps Script Web App base URL through POST
-- Normal training bookings save to the `Bookings` sheet
+- Normal training booking form submissions POST to the Worker endpoint: `https://goalie-academy-crm-bot.musatovnikita13.workers.dev/api/booking`
+- The Worker creates real `Bookings` rows with `source = website`, `status = new`, and a server-generated `booking_id`
+- Store / gear inquiries still POST to the existing Google Apps Script Web App endpoint
 - Store / gear inquiries from `Ask About Gear` save to the `StoreInquiries` sheet and do not create `Bookings` rows
 - `Ask About Gear` is a temporary Store inquiry form value, not a normal Training format dropdown option
 - Store inquiry mode changes the submit button to `Send Gear Inquiry` and uses gear inquiry success wording
 - Apps Script `doGet(e)` handles public Schedule, Programs, Camps, and Store JSON
-- Apps Script `doPost(e)` handles booking submissions, adds `status = new`, leaves `notes` empty, and generates `booking_id`
-- Booking status can then be changed manually in Google Sheets
+- Apps Script `doPost(e)` still handles Store inquiries and remains available as the old booking receiver rollback path
+- The booking submit switch is conditional inside `js/custom.js`; do not replace the shared Apps Script base URL globally because public data GET endpoints still use it
+- Website booking payloads remain `URLSearchParams` / form-url-encoded and keep the existing field names: `name`, `email`, `phone`, `goalie_age`, `preferred_date`, `preferred_time`, `training_type`, `message`, and `source`
+- The Worker ignores client-provided booking source for normal bookings and forces `source = website`
+- Booking status can then be changed from the Telegram CRM `/bookings` flow
 - After a successful live Schedule fetch, fallback/request option cards use only active live Schedule items; inactive Google Sheets rows stay hidden from the option list
 - On initial page load, Schedule waits for live data before showing fallback/request options to avoid flashing incomplete static fallback data
 - If the Schedule fetch fails or returns invalid data, the site keeps the static fallback schedule data
 - Testing notes: check Schedule navigation, exact-date markers, Request Availability prefill, and booking form validation
+
+Current endpoint split:
+
+- Normal booking POST -> Worker `/api/booking`
+- Store inquiry POST -> Apps Script
+- Schedule GET -> Apps Script `?action=schedule`
+- Programs GET -> Apps Script `?action=programs`
+- Camps GET -> Apps Script `?action=camps`
+- Store GET -> Apps Script `?action=store`
+
+Stage 14I-B website booking switch:
+
+- Normal website booking form submissions now go to the Worker production booking endpoint.
+- Store inquiries remain on Apps Script / `StoreInquiries`.
+- Public live data GET endpoints remain on Apps Script.
+- Existing user-facing copy is preserved:
+  - normal booking success: `Thank you! Your booking request has been sent.`
+  - Store inquiry success: `Thank you! Your gear inquiry has been sent. We’ll get back to you soon.`
+  - network/server error: `Sorry, something went wrong. Please try again or contact us directly.`
+- Existing validation messages, `Sending...` loading state, disabled submit button, success reset, and success auto-hide behavior are preserved.
+- A minimal in-flight submit guard prevents duplicate submissions while a request is already being sent.
+
+Stage 14I-B QA summary:
+
+- Live Server normal booking submit succeeded.
+- A new row appeared in `Bookings`.
+- The row used `source = website`, `status = new`, and a generated `booking_id`.
+- `+358` phone values were preserved.
+- `/bookings` saw the new row.
+- Store inquiry still went to Apps Script / `StoreInquiries`.
+- Schedule, Programs, Camps, and Store still loaded.
+- Validation still worked.
+- Browser console had no relevant errors.
+
+Rollback for the Stage 14I-B switch:
+
+- Revert the normal booking endpoint conditional in `js/custom.js` back to Apps Script.
+- Apps Script receiver remains untouched.
+- Store inquiry path already remains Apps Script.
+- Public data GET endpoints already remain Apps Script.
 
 JavaScript cache busting:
 
 - `js/custom.js` is loaded with a version query, for example `js/custom.js?v=20260509-1`
 - When `js/custom.js` changes in the future, bump the version query in `index.html` so returning visitors receive the updated file
 
+## Current architecture
+
+Website:
+
+- normal booking POST -> Worker `/api/booking`
+- Store inquiry POST -> Apps Script
+- live public data GET -> Apps Script
+
+Worker:
+
+- `/api/booking` receives normal website bookings
+- `/bookings` Telegram CRM reads and manages `Bookings`
+- status buttons manage `contacted`, `confirmed`, and `cancelled`
+- no new-booking Telegram notification or email is sent by the Worker yet
+
+Apps Script:
+
+- still handles `StoreInquiries`
+- still handles public Schedule, Programs, Camps, and Store GET data
+- old booking receiver still exists as rollback path
+- email/reminder flows remain separate
+
 ## Telegram booking CRM
 
-- Apps Script sends a Telegram notification after each booking row is appended to the `Bookings` sheet
+- Worker new-booking Telegram notifications are not implemented yet for website bookings
 - Store / gear inquiries use a separate Telegram notification flow from normal booking notifications
 - New booking rows receive `status = new`, empty `notes`, and a server-generated `booking_id`
 - Telegram notification buttons update Google Sheets status by `booking_id`: Contacted -> `contacted`, Confirmed -> `confirmed`, Cancelled -> `cancelled`
@@ -182,13 +248,12 @@ Telegram CRM testing checklist:
 1. Submit booking
 2. Confirm row appears
 3. Confirm status `new`, notes empty, and `booking_id` present
-4. Confirm Telegram message and buttons arrive
+4. Confirm `/bookings` sees the row
 5. Test Contacted / Confirmed / Cancelled buttons
-6. Confirm the matching email job is queued in `EmailQueue`
-7. Confirm Telegram sends a separate "Email sent" message after processing
-8. Confirm repeated button actions do not create duplicate email jobs
-9. Confirm `/start` does not create a booking
-10. Confirm Schedule still loads
+6. Confirm Worker status buttons do not create email jobs
+7. Confirm repeated button actions do not create duplicate writes
+8. Confirm `/start` does not create a booking
+9. Confirm Schedule still loads
 
 ## Current progress
 
@@ -251,6 +316,9 @@ Telegram CRM testing checklist:
 - [x] Booking POST updated to the unified Apps Script endpoint; new rows receive `status = new` and empty `notes`
 - [x] Booking rows include server-generated `booking_id` for Telegram CRM status updates
 - [x] Booking form sends name, goalie_age, training_type, preferred_date, preferred_time, phone, email, message, and source
+- [x] Stage 14I-B: normal website booking POST switched to Worker `/api/booking`; Store inquiries and public live data GET endpoints remain on Apps Script
+- [x] Booking form keeps URLSearchParams/form-url-encoded payload and existing user-facing success/error/loading UX
+- [x] Minimal duplicate in-flight submit guard added for booking form submissions
 - [x] Preferred time custom wheel picker added
 - [x] Manual Preferred time input syncs with the wheel picker
 - [x] Booking form includes loading, success, and error states
@@ -298,7 +366,27 @@ Telegram CRM testing checklist:
 - [x] Connect Schedule calendar to live Google Sheets data / dynamic sync
 - [ ] Optionally delete retained legacy files `js/contact_me.js` and `js/jqBootstrapValidation.js` after a final regression pass
 - [x] Add Telegram booking notification and admin status buttons
+- [ ] Add Worker Telegram notification for new website bookings
+- [ ] Migrate `StoreInquiries` to Worker if/when needed
+- [ ] Add Worker email / `EmailQueue` integration after audit
+- [ ] Link booking requests to `Schedule`
+- [ ] Add booking notes / follow-up workflow
+- [ ] Complete final Apps Script cleanup/removal and security cleanup/secret rotation before public launch/final cutover
 - [ ] Publish with GitHub Pages
+
+## Future roadmap
+
+- Monitor and QA the website Worker booking flow.
+- Decide whether to add Worker Telegram booking notification next.
+- Later: Link booking to Schedule.
+- Later: Notes / follow-up.
+- Later: Email / EmailQueue audit.
+- Later: StoreInquiries migration.
+- Later: Apps Script cleanup/removal.
+
+## Recent milestones
+
+- Stage 14I-B — Switch normal website booking POST to Worker
 
 ## Useful links
 

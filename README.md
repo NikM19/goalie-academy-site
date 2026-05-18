@@ -75,6 +75,8 @@ StoreInquiries columns:
 
 `timestamp | inquiry_id | name | email | phone | goalie_age | request_type | message | source | status | notes`
 
+Website Store inquiries use `request_type = Ask About Gear`, `source = store`, and `status = new`.
+
 StoreInquiries status values:
 
 `new | contacted | interested | not_interested | closed`
@@ -124,12 +126,13 @@ Live data flow:
 - Program and Camp CTA buttons keep using `data-training-format` so the booking Training format field is prefilled
 - Normal training booking form submissions POST to the Worker endpoint: `https://goalie-academy-crm-bot.musatovnikita13.workers.dev/api/booking`
 - The Worker creates real `Bookings` rows with `source = website`, `status = new`, and a server-generated `booking_id`
-- Store / gear inquiries still POST to the existing Google Apps Script Web App endpoint
-- Store / gear inquiries from `Ask About Gear` save to the `StoreInquiries` sheet and do not create `Bookings` rows
+- Store / gear inquiries from `Ask About Gear` POST to the Worker endpoint: `https://goalie-academy-crm-bot.musatovnikita13.workers.dev/api/store-inquiry`
+- The Worker writes Store inquiries to the `StoreInquiries` sheet, sends the Worker bot `🧤 New gear inquiry` notification, and does not create `Bookings` rows
+- Store inquiry payloads include `request_type = Ask About Gear`, `training_type = Ask About Gear`, and `source = store`
 - `Ask About Gear` is a temporary Store inquiry form value, not a normal Training format dropdown option
-- Store inquiry mode changes the submit button to `Send Gear Inquiry` and uses gear inquiry success wording
+- Store inquiry mode changes the submit button to `Send Gear Inquiry`, uses `Sending...` while submitting, preserves the duplicate submit guard, resets after success, focuses the message field after the Store CTA jump, and uses gear inquiry success wording
 - Apps Script `doGet(e)` handles public Schedule, Programs, Camps, and Store JSON
-- Apps Script `doPost(e)` still handles Store inquiries and remains available as the old booking receiver rollback path
+- Apps Script `doPost(e)` still handles Store inquiries as a rollback path, but the website Store form no longer uses that path after the Worker switch
 - The booking submit switch is conditional inside `js/custom.js`; do not replace the shared Apps Script base URL globally because public data GET endpoints still use it
 - Website booking payloads remain `URLSearchParams` / form-url-encoded and keep the existing field names: `name`, `email`, `phone`, `goalie_age`, `preferred_date`, `preferred_time`, `training_type`, `message`, and `source`
 - The Worker ignores client-provided booking source for normal bookings and forces `source = website`
@@ -142,7 +145,7 @@ Live data flow:
 Current endpoint split:
 
 - Normal booking POST -> Worker `/api/booking`
-- Store inquiry POST -> Apps Script
+- Store inquiry POST -> Worker `/api/store-inquiry`
 - Schedule GET -> Apps Script `?action=schedule`
 - Programs GET -> Apps Script `?action=programs`
 - Camps GET -> Apps Script `?action=camps`
@@ -151,7 +154,7 @@ Current endpoint split:
 Stage 14I-B website booking switch:
 
 - Normal website booking form submissions now go to the Worker production booking endpoint.
-- Store inquiries remain on Apps Script / `StoreInquiries`.
+- Store inquiries remained on Apps Script / `StoreInquiries` during this stage; Stage 19C-B later switched them to the Worker Store endpoint.
 - Public live data GET endpoints remain on Apps Script.
 - Existing user-facing copy is preserved:
   - normal booking success: `Thank you! Your booking request has been sent.`
@@ -167,7 +170,7 @@ Stage 14I-B QA summary:
 - The row used `source = website`, `status = new`, and a generated `booking_id`.
 - `+358` phone values were preserved.
 - `/bookings` saw the new row.
-- Store inquiry still went to Apps Script / `StoreInquiries`.
+- Store inquiry still went to Apps Script / `StoreInquiries` during this stage.
 - Schedule, Programs, Camps, and Store still loaded.
 - Validation still worked.
 - Browser console had no relevant errors.
@@ -176,8 +179,37 @@ Rollback for the Stage 14I-B switch:
 
 - Revert the normal booking endpoint conditional in `js/custom.js` back to Apps Script.
 - Apps Script receiver remains untouched.
-- Store inquiry path already remains Apps Script.
+- Store inquiry rollback is tracked separately under the Stage 19C-B operations notes.
 - Public data GET endpoints already remain Apps Script.
+
+Stage 19C-B Store inquiry Worker switch:
+
+- Website Store / Ask About Gear submissions now go to the Worker Store endpoint.
+- Normal website booking submissions remain on Worker `/api/booking`.
+- Public Schedule, Programs, Camps, and Store GET endpoints remain on Apps Script.
+- Apps Script Store POST remains available as rollback, but the website Store form no longer uses it.
+- `js/custom.js` cache busting was updated in `index.html` to `js/custom.js?v=20260518-store-worker`.
+- Existing user-facing Store UX is preserved:
+  - CTA label: `Ask About Gear`
+  - submit text: `Send Gear Inquiry`
+  - loading state: `Sending...`
+  - success: `Thank you! Your gear inquiry has been sent. We’ll get back to you soon.`
+  - error: `Sorry, something went wrong. Please try again or contact us directly.`
+  - duplicate submit guard, success reset, and Store CTA scroll/focus behavior remain active.
+
+Stage 19C-B QA notes:
+
+- Store inquiry should create a `StoreInquiries` row with `request_type = Ask About Gear`, `source = store`, and `status = new`.
+- The new Worker bot should receive `🧤 New gear inquiry`.
+- The old Apps Script bot should not receive website Store inquiries after the switch.
+- Normal booking should still create a `Bookings` row and send the Worker booking notification.
+- Store, Schedule, Programs, and Camps public data should still load from Apps Script.
+
+Rollback for the Stage 19C-B Store switch:
+
+- If Worker `/api/store-inquiry` fails, switch only Store POST routing in `js/custom.js` back to the Apps Script endpoint.
+- Do not change normal booking routing when rolling back Store inquiries.
+- Do not change public Schedule, Programs, Camps, or Store GET endpoints.
 
 JavaScript cache busting:
 
@@ -189,27 +221,28 @@ JavaScript cache busting:
 Website:
 
 - normal booking POST -> Worker `/api/booking`
-- Store inquiry POST -> Apps Script
+- Store inquiry POST -> Worker `/api/store-inquiry`
 - live public data GET -> Apps Script
 
 Worker:
 
 - `/api/booking` receives normal website bookings
+- `/api/store-inquiry` receives website Store / Ask About Gear inquiries, writes `StoreInquiries`, and sends the Worker bot gear notification
 - `/bookings` Telegram CRM reads and manages `Bookings`
 - status buttons manage `contacted`, `confirmed`, and `cancelled`
-- no new-booking Telegram notification or email is sent by the Worker yet
+- new website booking and Store inquiry Telegram notifications are sent by the Worker; email remains separate
 
 Apps Script:
 
-- still handles `StoreInquiries`
 - still handles public Schedule, Programs, Camps, and Store GET data
+- Store POST remains available as rollback for `StoreInquiries`
 - old booking receiver still exists as rollback path
 - email/reminder flows remain separate
 
 ## Telegram booking CRM
 
-- Worker new-booking Telegram notifications are not implemented yet for website bookings
-- Store / gear inquiries use a separate Telegram notification flow from normal booking notifications
+- Worker new-booking Telegram notifications are implemented for website bookings
+- Store / gear inquiries use the Worker `🧤 New gear inquiry` notification flow, separate from normal booking notifications
 - New booking rows receive `status = new`, empty `notes`, and a server-generated `booking_id`
 - Telegram notification buttons update Google Sheets status by `booking_id`: Contacted -> `contacted`, Confirmed -> `confirmed`, Cancelled -> `cancelled`
 - Contacted queues the info email, Confirmed queues the confirmation email, and Cancelled queues the cancellation email
@@ -316,7 +349,8 @@ Telegram CRM testing checklist:
 - [x] Booking POST updated to the unified Apps Script endpoint; new rows receive `status = new` and empty `notes`
 - [x] Booking rows include server-generated `booking_id` for Telegram CRM status updates
 - [x] Booking form sends name, goalie_age, training_type, preferred_date, preferred_time, phone, email, message, and source
-- [x] Stage 14I-B: normal website booking POST switched to Worker `/api/booking`; Store inquiries and public live data GET endpoints remain on Apps Script
+- [x] Stage 14I-B: normal website booking POST switched to Worker `/api/booking`; Store inquiries stayed on Apps Script until the later Stage 19C-B switch
+- [x] Stage 19C-B: Store / Ask About Gear POST switched to Worker `/api/store-inquiry`; public live data GET endpoints remain on Apps Script
 - [x] Booking form keeps URLSearchParams/form-url-encoded payload and existing user-facing success/error/loading UX
 - [x] Minimal duplicate in-flight submit guard added for booking form submissions
 - [x] Preferred time custom wheel picker added
@@ -345,6 +379,7 @@ Telegram CRM testing checklist:
 - [x] Programs and Reviews checked on desktop and mobile
 - [x] Academy Store preview section added after Reviews and before Contact
 - [x] Academy Store connected to live Google Sheets data with static fallback, `goalieAcademy.store.v1` cache, and tab-return refresh; CTA still links to #contacts only
+- [x] Store remains preview/interest only with no cart, payment, or checkout
 - [x] Contact section redesigned into one shared premium split-card layout
 - [x] Contact section includes Book Training form
 - [x] Contact section uses light premium form fields
@@ -366,8 +401,8 @@ Telegram CRM testing checklist:
 - [x] Connect Schedule calendar to live Google Sheets data / dynamic sync
 - [ ] Optionally delete retained legacy files `js/contact_me.js` and `js/jqBootstrapValidation.js` after a final regression pass
 - [x] Add Telegram booking notification and admin status buttons
-- [ ] Add Worker Telegram notification for new website bookings
-- [ ] Migrate `StoreInquiries` to Worker if/when needed
+- [x] Add Worker Telegram notification for new website bookings
+- [x] Migrate website `StoreInquiries` POST path to Worker
 - [ ] Add Worker email / `EmailQueue` integration after audit
 - [ ] Link booking requests to `Schedule`
 - [ ] Add booking notes / follow-up workflow
@@ -377,15 +412,16 @@ Telegram CRM testing checklist:
 ## Future roadmap
 
 - Monitor and QA the website Worker booking flow.
-- Decide whether to add Worker Telegram booking notification next.
+- Monitor the Worker Telegram notification flows for normal bookings and Store inquiries.
 - Later: Link booking to Schedule.
 - Later: Notes / follow-up.
 - Later: Email / EmailQueue audit.
-- Later: StoreInquiries migration.
+- Monitor and QA the website Worker Store inquiry flow.
 - Later: Apps Script cleanup/removal.
 
 ## Recent milestones
 
+- be86eba — Switch store inquiries to Worker
 - Stage 14I-B — Switch normal website booking POST to Worker
 
 ## Useful links

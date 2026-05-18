@@ -7,6 +7,7 @@
 
 	var bookingRequestsEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec';
 	var workerBookingEndpoint = 'https://goalie-academy-crm-bot.musatovnikita13.workers.dev/api/booking';
+	var workerStoreInquiryEndpoint = 'https://goalie-academy-crm-bot.musatovnikita13.workers.dev/api/store-inquiry';
 	var scheduleEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=schedule';
 	var programsEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=programs';
 	var campsEndpoint = 'https://script.google.com/macros/s/AKfycbwr1xJUyKm85kbUD4YSxKR7pRb-jP0kfzRQmhSOEdMG4MGD9XcU6gjjOvvKMTpq_RxEnQ/exec?action=camps';
@@ -668,6 +669,8 @@
 		function buildPayload() {
 			var preferredTimeInput = document.getElementById('booking-time-input');
 			var preferredTime = normalizeBookingTimeValue(preferredTimeInput ? preferredTimeInput.value : getFieldValue('booking-time'));
+			var isStoreInquiry = form.getAttribute('data-inquiry-source') === 'store';
+			var payload;
 
 			if (preferredTime !== null) {
 				document.getElementById('booking-time').value = preferredTime;
@@ -676,7 +679,7 @@
 				}
 			}
 
-			return {
+			payload = {
 				name: getFieldValue('booking-name'),
 				email: getFieldValue('booking-email'),
 				phone: getFieldValue('booking-phone'),
@@ -685,8 +688,14 @@
 				training_type: getFieldValue('booking-format'),
 				preferred_time: preferredTime === null ? (preferredTimeInput ? preferredTimeInput.value.trim() : getFieldValue('booking-time')) : preferredTime,
 				message: getFieldValue('booking-message'),
-				source: form.getAttribute('data-inquiry-source') === 'store' ? 'store' : 'website'
+				source: isStoreInquiry ? 'store' : 'website'
 			};
+
+			if (isStoreInquiry) {
+				payload.request_type = storeInquiryTrainingType;
+			}
+
+			return payload;
 		}
 
 		function validatePayload(payload) {
@@ -718,7 +727,7 @@
 		}
 
 		function getBookingSubmitEndpoint(payload) {
-			return isStoreInquiryPayload(payload) ? bookingRequestsEndpoint : workerBookingEndpoint;
+			return isStoreInquiryPayload(payload) ? workerStoreInquiryEndpoint : workerBookingEndpoint;
 		}
 
 		function submitBookingRequest() {

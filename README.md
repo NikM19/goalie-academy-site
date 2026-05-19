@@ -131,10 +131,13 @@ Live data flow:
 - Store inquiry payloads include `request_type = Ask About Gear`, `training_type = Ask About Gear`, and `source = store`
 - `Ask About Gear` is a temporary Store inquiry form value, not a normal Training format dropdown option
 - Store inquiry mode changes the submit button to `Send Gear Inquiry`, uses `Sending...` while submitting, preserves the duplicate submit guard, resets after success, focuses the message field after the Store CTA jump, and uses gear inquiry success wording
+- The shared booking/contact form includes a hidden anti-spam honeypot field named `company_website`; it is not visible or focusable for normal users
+- Normal booking and Store / Ask About Gear submissions both include `company_website` in the payload, and the Worker decides whether to drop suspicious submissions
+- The website does not implement Turnstile or captcha at this stage
 - Apps Script `doGet(e)` handles public Schedule, Programs, Camps, and Store JSON
 - Apps Script `doPost(e)` still handles Store inquiries as a rollback path, but the website Store form no longer uses that path after the Worker switch
 - The booking submit switch is conditional inside `js/custom.js`; do not replace the shared Apps Script base URL globally because public data GET endpoints still use it
-- Website booking payloads remain `URLSearchParams` / form-url-encoded and keep the existing field names: `name`, `email`, `phone`, `goalie_age`, `preferred_date`, `preferred_time`, `training_type`, `message`, and `source`
+- Website booking payloads remain `URLSearchParams` / form-url-encoded and keep the existing field names: `name`, `email`, `phone`, `goalie_age`, `preferred_date`, `preferred_time`, `training_type`, `message`, `company_website`, and `source`
 - The Worker ignores client-provided booking source for normal bookings and forces `source = website`
 - Booking status can then be changed from the Telegram CRM `/bookings` flow
 - After a successful live Schedule fetch, fallback/request option cards use only active live Schedule items; inactive Google Sheets rows stay hidden from the option list

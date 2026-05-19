@@ -688,6 +688,7 @@
 				training_type: getFieldValue('booking-format'),
 				preferred_time: preferredTime === null ? (preferredTimeInput ? preferredTimeInput.value.trim() : getFieldValue('booking-time')) : preferredTime,
 				message: getFieldValue('booking-message'),
+				company_website: getFieldValue('booking-company-website'),
 				source: isStoreInquiry ? 'store' : 'website'
 			};
 

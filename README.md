@@ -95,7 +95,7 @@ EmailQueue columns:
 
 Schedule columns:
 
-`id | title | date | time | type | age | location | status | training_format | description | is_active | display_order`
+`id | title | date | time | type | age | age_min | age_max | age_label | location | status | training_format | description | is_active | display_order`
 
 Store columns:
 
@@ -110,6 +110,10 @@ Schedule date rules:
 Live data flow:
 
 - Schedule reads public live JSON from Google Apps Script GET endpoint with `?action=schedule`
+- Public Schedule JSON keeps old `age` and now also includes Age Model v2 fields: `age_min`, `age_max`, and `age_label`
+- Website Schedule cards display `age_label` when present and fall back to old `age` when `age_label` is blank or missing
+- Static Schedule fallback data can stay age-only, and old clients that read `age` still work
+- No public age filtering is implemented yet; `age_min` and `age_max` are carried for future use only
 - Programs reads public live JSON from Google Apps Script GET endpoint with `?action=programs`
 - Camps reads public live JSON from Google Apps Script GET endpoint with `?action=camps`
 - Academy Store reads public live JSON from Google Apps Script GET endpoint with `?action=store`
@@ -143,7 +147,20 @@ Live data flow:
 - After a successful live Schedule fetch, fallback/request option cards use only active live Schedule items; inactive Google Sheets rows stay hidden from the option list
 - On initial page load, Schedule waits for live data before showing fallback/request options to avoid flashing incomplete static fallback data
 - If the Schedule fetch fails or returns invalid data, the site keeps the static fallback schedule data
-- Testing notes: check Schedule navigation, exact-date markers, Request Availability prefill, and booking form validation
+- If Apps Script `?action=schedule` does not include `age_label`, the website still displays old `age`
+- To test public Schedule JSON, open the Apps Script endpoint with `?action=schedule` and check one item includes `age`, `age_min`, `age_max`, and `age_label`
+- Programs and Camps age fields are separate public data flows and were not changed by Schedule Age Model v2 display support
+- Store, booking form POST, and booking-to-Schedule matching were not changed by Schedule Age Model v2 display support
+- Worker CRM Age Model v2 implementation is documented separately in the Worker repository
+- Testing notes: check Schedule navigation, exact-date markers, Request Availability prefill, booking form validation, and Schedule age display fallback
+
+Schedule Age Model v2 QA checklist:
+
+1. Live Server: Schedule loads from Apps Script.
+2. A row with `age_label` displays `age_label`.
+3. A row with blank/missing `age_label` falls back to `age`.
+4. Programs, Camps, and Store render normally.
+5. Browser console has no relevant errors.
 
 Current endpoint split:
 
@@ -371,6 +388,7 @@ Telegram CRM testing checklist:
 - [x] Schedule connected to live Google Apps Script JSON with static fallback data, by-request rows, monthly rows, exact-date event markers, and exact-date event detail cards
 - [x] Schedule fallback training format options now use active live Schedule items after successful fetch, with static fallback retained if live fetch fails
 - [x] Schedule initial loading state added so static fallback options do not visibly flash before live data loads
+- [x] Schedule public Age Model v2 display support added: `age_label` displays first, with old `age` as fallback
 - [x] Cooperation section updated with three partnership cards
 - [x] Cooperation section colors polished to match Goalie Academy brand styling
 - [x] Contact actions changed to centered icon-only buttons

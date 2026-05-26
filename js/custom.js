@@ -1347,6 +1347,10 @@
 			return String(value || '').trim();
 		}
 
+		function getScheduleAgeDisplay(item) {
+			return normalizeScheduleText(item && item.age_label) || normalizeScheduleText(item && item.age);
+		}
+
 		function getScheduleStatusClass(status) {
 			var normalizedStatus = normalizeScheduleText(status).toLowerCase();
 			if (normalizedStatus.indexOf('available') !== -1 || normalizedStatus.indexOf('ask') !== -1 || normalizedStatus.indexOf('open') !== -1) {
@@ -1365,6 +1369,9 @@
 				time: normalizeScheduleText(item.time),
 				type: normalizeScheduleText(item.type),
 				age: normalizeScheduleText(item.age),
+				age_min: normalizeScheduleText(item.age_min),
+				age_max: normalizeScheduleText(item.age_max),
+				age_label: normalizeScheduleText(item.age_label),
 				location: normalizeScheduleText(item.location),
 				status: status,
 				statusClass: getScheduleStatusClass(status),
@@ -1529,6 +1536,7 @@
 			var title = document.createElement('h4');
 			var status = document.createElement('span');
 			var details = document.createElement('ul');
+			var ageDisplay = getScheduleAgeDisplay(item);
 
 			eventItem.className = 'schedule-event-item';
 			heading.className = 'schedule-event-heading';
@@ -1551,8 +1559,8 @@
 			if (item.location) {
 				details.appendChild(createDetail('fa fa-map-marker', item.location));
 			}
-			if (item.age) {
-				details.appendChild(createDetail('fa fa-users', item.age));
+			if (ageDisplay) {
+				details.appendChild(createDetail('fa fa-users', ageDisplay));
 			}
 
 			eventItem.appendChild(heading);

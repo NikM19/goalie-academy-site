@@ -618,14 +618,8 @@
 								</div>
 								<div class="col-md-6">
 									<div class="form-group">
-										<label class="screen-reader-text" for="booking-age-group">Player age group</label>
-										<select class="form-control" id="booking-age-group" name="goalie_age" autocomplete="off">
-											<option value="">Player age group</option>
-											<option>U7&ndash;U10</option>
-											<option>U11&ndash;U14</option>
-											<option>U15&ndash;U17</option>
-											<option>U18&ndash;U20</option>
-										</select>
+										<label class="screen-reader-text" for="booking-age">Player age</label>
+										<input class="form-control" id="booking-age" name="goalie_age" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="Player age" autocomplete="off" required>
 									</div>
 								</div>
 								<div class="col-md-6">
@@ -741,7 +735,7 @@
 	<script src="js/parallaxie.js"></script>
 	<script src="js/headline.js"></script>
     <!-- ALL PLUGINS -->
-    <script src="js/custom.js?v=20260526-schedule-age-label"></script>
+    <script src="js/custom.js?v=20260527-player-age"></script>
     <script src="js/jquery.vide.js"></script>
 
 </body>

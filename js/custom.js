@@ -613,6 +613,23 @@
 			return field ? field.value.trim() : '';
 		}
 
+		function getBookingAgeField() {
+			return document.getElementById('booking-age');
+		}
+
+		function normalizePlayerAgeValue(value) {
+			return String(value || '').replace(/\D/g, '').slice(0, 2);
+		}
+
+		function isValidPlayerAge(value) {
+			if (!/^\d{1,2}$/.test(value)) {
+				return false;
+			}
+
+			var age = Number(value);
+			return age >= 5 && age <= 65;
+		}
+
 		function clearStatusTimers() {
 			if (statusHideTimer) {
 				window.clearTimeout(statusHideTimer);
@@ -683,7 +700,7 @@
 				name: getFieldValue('booking-name'),
 				email: getFieldValue('booking-email'),
 				phone: getFieldValue('booking-phone'),
-				goalie_age: getFieldValue('booking-age-group'),
+				goalie_age: getFieldValue('booking-age'),
 				preferred_date: getFieldValue('booking-date'),
 				training_type: getFieldValue('booking-format'),
 				preferred_time: preferredTime === null ? (preferredTimeInput ? preferredTimeInput.value.trim() : getFieldValue('booking-time')) : preferredTime,
@@ -705,6 +722,9 @@
 			}
 			if (!payload.training_type) {
 				return 'Please choose a training format.';
+			}
+			if (!isValidPlayerAge(payload.goalie_age)) {
+				return 'Please enter the player\u2019s age as a number from 5 to 65.';
 			}
 			if (!payload.email && !payload.phone) {
 				return 'Please enter an email or phone number.';
@@ -741,6 +761,12 @@
 
 			if (validationError) {
 				setStatus(validationError, 'error');
+				if (validationError === 'Please enter the player\u2019s age as a number from 5 to 65.') {
+					var ageField = getBookingAgeField();
+					if (ageField) {
+						ageField.focus();
+					}
+				}
 				return;
 			}
 
@@ -772,6 +798,41 @@
 		}
 
 		submitButton.addEventListener('click', submitBookingRequest);
+		(function() {
+			var ageField = getBookingAgeField();
+
+			if (ageField) {
+				ageField.addEventListener('beforeinput', function(event) {
+					var inputText = event.data || '';
+					var selectionStart = ageField.selectionStart || 0;
+					var selectionEnd = ageField.selectionEnd || selectionStart;
+					var nextValue;
+
+					if (!inputText || event.inputType.indexOf('delete') === 0) {
+						return;
+					}
+
+					nextValue = ageField.value.slice(0, selectionStart) + inputText + ageField.value.slice(selectionEnd);
+
+					if (!/^\d{0,2}$/.test(nextValue)) {
+						event.preventDefault();
+					}
+				});
+				ageField.addEventListener('paste', function(event) {
+					var pastedText = event.clipboardData ? event.clipboardData.getData('text') : '';
+
+					if (!/^\d{1,2}$/.test(pastedText.trim())) {
+						event.preventDefault();
+					}
+				});
+				ageField.addEventListener('input', function() {
+					var normalizedAge = normalizePlayerAgeValue(ageField.value);
+					if (ageField.value !== normalizedAge) {
+						ageField.value = normalizedAge;
+					}
+				});
+			}
+		}());
 		form.addEventListener('submit', function(event) {
 			event.preventDefault();
 			submitBookingRequest();

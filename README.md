@@ -83,7 +83,14 @@ StoreInquiries status values:
 
 Programs columns:
 
-`id | title | description | age | duration | price | status | button_text | training_format | display_order | label`
+`id | title | description | age | duration | price | status | button_text | training_format | display_order | label | is_active | show_in_booking_dropdown`
+
+Programs field notes:
+
+- `is_active` controls whether a Program card is shown by the public Programs endpoint.
+- `show_in_booking_dropdown` controls whether that Program's `training_format` is appended to the booking Training format dropdown.
+- Use `TRUE` / `FALSE` in Google Sheets for `is_active` and `show_in_booking_dropdown`.
+- After this one-time CMS behavior update, future Programs can be added through Google Sheets without changing website code for standard card + dropdown use cases, as long as `is_active` is `TRUE`, `show_in_booking_dropdown` is `TRUE`, `training_format` is filled, and Apps Script `?action=programs` returns the row.
 
 Camps columns:
 
@@ -115,6 +122,10 @@ Live data flow:
 - Static Schedule fallback data can stay age-only, and old clients that read `age` still work
 - No public age filtering is implemented yet; `age_min` and `age_max` are carried for future use only
 - Programs reads public live JSON from Google Apps Script GET endpoint with `?action=programs`
+- Apps Script `?action=programs` returns `show_in_booking_dropdown` as a boolean for each Program row
+- Live Programs rows with `show_in_booking_dropdown = TRUE` append missing `training_format` values to the booking Training format dropdown
+- Existing static Training format dropdown options remain as fallback; dynamic Program options are appended only when missing, non-empty, and not `Ask About Gear`
+- Store inquiries remain separate from normal Programs and booking dropdown behavior
 - Camps reads public live JSON from Google Apps Script GET endpoint with `?action=camps`
 - Academy Store reads public live JSON from Google Apps Script GET endpoint with `?action=store`
 - Programs and Camps keep static HTML cards as fallback
@@ -128,6 +139,7 @@ Live data flow:
 - Schedule does not use the Programs/Camps browser cache behavior
 - Academy Store remains a preview/interest section; CTA links to `#contacts` only and there is no cart, payment, checkout, or Buy Now flow
 - Program and Camp CTA buttons keep using `data-training-format` so the booking Training format field is prefilled
+- Program CTA prefill works for dynamic Program options once their `training_format` has been appended to the booking Training format dropdown
 - Normal training booking form submissions POST to the Worker endpoint: `https://goalie-academy-crm-bot.musatovnikita13.workers.dev/api/booking`
 - The Worker creates real `Bookings` rows with `source = website`, `status = new`, and a server-generated `booking_id`
 - The booking form uses a compact numeric `Player age` input instead of the old age-group dropdown; it still submits the existing `goalie_age` payload field
@@ -153,6 +165,7 @@ Live data flow:
 - To test public Schedule JSON, open the Apps Script endpoint with `?action=schedule` and check one item includes `age`, `age_min`, `age_max`, and `age_label`
 - Programs and Camps age fields are separate public data flows and were not changed by Schedule Age Model v2 display support
 - Store, booking form POST, and booking-to-Schedule matching were not changed by Schedule Age Model v2 display support
+- Dynamic Programs booking options do not update Worker parser aliases or Schedule matching; new training values appear in `Bookings.training_type` and Telegram notifications, while matching improvements are a later separate stage
 - Worker CRM Age Model v2 implementation is documented separately in the Worker repository
 - Testing notes: check Schedule navigation, exact-date markers, Request Availability prefill, booking form validation, and Schedule age display fallback
 
@@ -234,10 +247,34 @@ Rollback for the Stage 19C-B Store switch:
 - Do not change normal booking routing when rolling back Store inquiries.
 - Do not change public Schedule, Programs, Camps, or Store GET endpoints.
 
+Dynamic Programs booking options and expanded Programs layout:
+
+- Completed in commit `d37e401` (`Add dynamic program booking options`).
+- Google Sheets Programs now includes `is_active` and `show_in_booking_dropdown`.
+- Apps Script `?action=programs` was manually updated and now returns `show_in_booking_dropdown: true/false`.
+- Programs cards still render from live Apps Script `?action=programs`.
+- Booking Training format dropdown dynamically appends missing options from live Programs rows where `show_in_booking_dropdown` is true/truthy.
+- Dynamic dropdown options use each Program row's `training_format`, keep existing static options as fallback, avoid duplicates, ignore empty `training_format`, and do not add `Ask About Gear` as a normal Program option.
+- Store inquiry behavior remains separate and unchanged.
+- Off-Ice Goalie Training and Adult Goalie Training were added through Google Sheets.
+- For 4 or fewer Program cards, the existing Programs layout remains unchanged.
+- For 5 or more Program cards, the Programs row uses an expanded layout: desktop 3 per row, tablet 2 per row, mobile 1 per row.
+
+Dynamic Programs QA summary:
+
+- 6 Programs cards rendered from Google Sheets.
+- Off-Ice Goalie Training and Adult Goalie Training appeared as Programs cards.
+- Off-Ice Goalie Training and Adult Goalie Training appeared in the booking Training format dropdown.
+- Program CTA prefill worked for the new Programs.
+- Test bookings sent Telegram notifications with the correct Training value.
+- Store inquiry flow was checked and was not intentionally changed.
+- Expanded Programs layout was checked and approved.
+
 JavaScript cache busting:
 
 - `js/custom.js` is loaded with a version query, for example `js/custom.js?v=20260509-1`
 - When `js/custom.js` changes in the future, bump the version query in `index.html` so returning visitors receive the updated file
+- Current cache-bust values after the dynamic Programs stage: `style.css?v=20260527-1` and `js/custom.js?v=20260527-1`
 
 ## Current architecture
 
@@ -258,6 +295,7 @@ Worker:
 Apps Script:
 
 - still handles public Schedule, Programs, Camps, and Store GET data
+- Programs GET remains required for live Program cards and dynamic booking dropdown options
 - Store POST remains available as rollback for `StoreInquiries`
 - old booking receiver still exists as rollback path
 - email/reminder flows remain separate
@@ -341,6 +379,10 @@ Telegram CRM testing checklist:
 - [x] Programs layout supports desktop 4-column, tablet 2-column, and mobile 1-column behavior
 - [x] Program card top-panel hover animation and hover shadow updated to Goalie Academy brand colors
 - [x] Programs connected to live Google Sheets data with static fallback cards retained
+- [x] Programs sheet now uses `is_active` and `show_in_booking_dropdown` for live card visibility and booking dropdown control
+- [x] Dynamic Programs booking options added: eligible live Programs append missing `training_format` values to the booking Training format dropdown
+- [x] Off-Ice Goalie Training and Adult Goalie Training added through Google Sheets and verified in Programs cards, dropdown prefill, and Telegram booking notifications
+- [x] Programs expanded layout added for 5+ live cards: desktop 3 per row, tablet 2 per row, mobile 1 per row
 - [x] Programs static fallback aligned with current live data
 - [x] Programs and Camps browser cache added to reduce visible fallback-to-live content swapping
 - [x] Programs and Camps refresh live data on tab return with a 5-minute throttle
@@ -438,6 +480,7 @@ Telegram CRM testing checklist:
 
 - Monitor and QA the website Worker booking flow.
 - Monitor the Worker Telegram notification flows for normal bookings and Store inquiries.
+- Later: Add Worker parser aliases / Schedule matching improvements for new training types.
 - Later: Link booking to Schedule.
 - Later: Notes / follow-up.
 - Later: Email / EmailQueue audit.
@@ -446,6 +489,7 @@ Telegram CRM testing checklist:
 
 ## Recent milestones
 
+- d37e401 — Add dynamic program booking options
 - be86eba — Switch store inquiries to Worker
 - Stage 14I-B — Switch normal website booking POST to Worker
 

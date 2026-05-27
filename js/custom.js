@@ -884,6 +884,48 @@
 			});
 		}
 
+		function isProgramBookingDropdownEnabled(item) {
+			var value = item ? item.show_in_booking_dropdown : false;
+
+			if (value === true) {
+				return true;
+			}
+
+			value = normalizeProgramText(value).toLowerCase();
+			return value === 'true' || value === 'yes' || value === '1';
+		}
+
+		function appendBookingFormatOptionsFromPrograms(items) {
+			var bookingFormat = getBookingFormatField();
+			var existingValues = {};
+			var storeOption;
+
+			if (!bookingFormat || !Array.isArray(items)) {
+				return;
+			}
+
+			Array.prototype.forEach.call(bookingFormat.options, function(option) {
+				existingValues[normalizeProgramText(option.value)] = true;
+			});
+
+			storeOption = bookingFormat.querySelector('option[data-store-inquiry-option="true"]');
+
+			getSortedProgramItems(items).forEach(function(item) {
+				var trainingFormat = normalizeProgramText(item.training_format);
+				var option;
+
+				if (!trainingFormat || trainingFormat === storeInquiryTrainingType || !isProgramBookingDropdownEnabled(item) || existingValues[trainingFormat]) {
+					return;
+				}
+
+				option = document.createElement('option');
+				option.value = trainingFormat;
+				option.textContent = trainingFormat;
+				bookingFormat.insertBefore(option, storeOption || null);
+				existingValues[trainingFormat] = true;
+			});
+		}
+
 		function createProgramDetail(label, value, iconClass) {
 			var item = document.createElement('li');
 			var icon = document.createElement('i');
@@ -1007,6 +1049,9 @@
 			var validItems = getSortedProgramItems(items).filter(function(item) {
 				return normalizeProgramText(item.title);
 			});
+
+			appendBookingFormatOptionsFromPrograms(items);
+			programsRow.classList.toggle('programs-row--expanded', validItems.length >= 5);
 
 			if (!validItems.length) {
 				return;

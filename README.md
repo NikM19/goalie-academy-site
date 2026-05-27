@@ -130,6 +130,8 @@ Live data flow:
 - Program and Camp CTA buttons keep using `data-training-format` so the booking Training format field is prefilled
 - Normal training booking form submissions POST to the Worker endpoint: `https://goalie-academy-crm-bot.musatovnikita13.workers.dev/api/booking`
 - The Worker creates real `Bookings` rows with `source = website`, `status = new`, and a server-generated `booking_id`
+- The booking form uses a compact numeric `Player age` input instead of the old age-group dropdown; it still submits the existing `goalie_age` payload field
+- `goalie_age` accepts digits only, up to 2 characters, with valid ages from 5 to 65; invalid values use the existing form-level error message: `Please enter the player’s age as a number from 5 to 65.`
 - Store / gear inquiries from `Ask About Gear` POST to the Worker endpoint: `https://goalie-academy-crm-bot.musatovnikita13.workers.dev/api/store-inquiry`
 - The Worker writes Store inquiries to the `StoreInquiries` sheet, sends the Worker bot `🧤 New gear inquiry` notification, and does not create `Bookings` rows
 - Store inquiry payloads include `request_type = Ask About Gear`, `training_type = Ask About Gear`, and `source = store`
@@ -182,6 +184,7 @@ Stage 14I-B website booking switch:
   - network/server error: `Sorry, something went wrong. Please try again or contact us directly.`
 - Existing validation messages, `Sending...` loading state, disabled submit button, success reset, and success auto-hide behavior are preserved.
 - A minimal in-flight submit guard prevents duplicate submissions while a request is already being sent.
+- Player age validation uses the shared form-level status area and does not add inline helper/error text, so the form layout stays stable.
 
 Stage 14I-B QA summary:
 
@@ -358,7 +361,7 @@ Telegram CRM testing checklist:
 - [x] Buttons linked to #contacts and #programs
 - [x] Section checked on desktop and mobile
 - [x] Booking section updated with live training request form
-- [x] Form includes name, email, phone, age group, training format, Preferred date, Preferred time, and message fields
+- [x] Form includes name, email, phone, numeric Player age, training format, Preferred date, Preferred time, and message fields
 - [x] Programs, Camps, and Coach tab CTAs prefill the Contact form Training format field with `data-training-format` and `js/custom.js`
 - [x] Camp-specific Training format options added for Summer Goalie Camp, Weekend Intensive, and Preseason Goalie Intensive
 - [x] Contact form includes Preferred date field aligned with Training format
@@ -369,6 +372,7 @@ Telegram CRM testing checklist:
 - [x] Booking POST updated to the unified Apps Script endpoint; new rows receive `status = new` and empty `notes`
 - [x] Booking rows include server-generated `booking_id` for Telegram CRM status updates
 - [x] Booking form sends name, goalie_age, training_type, preferred_date, preferred_time, phone, email, message, and source
+- [x] Booking age group dropdown replaced with numeric Player age input; `goalie_age=12` is sent for age 12 and invalid ages are blocked/rejected
 - [x] Stage 14I-B: normal website booking POST switched to Worker `/api/booking`; Store inquiries stayed on Apps Script until the later Stage 19C-B switch
 - [x] Stage 19C-B: Store / Ask About Gear POST switched to Worker `/api/store-inquiry`; public live data GET endpoints remain on Apps Script
 - [x] Booking form keeps URLSearchParams/form-url-encoded payload and existing user-facing success/error/loading UX
